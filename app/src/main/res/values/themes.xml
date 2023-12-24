@@ -1,0 +1,17 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.NdoroKojo" parent="Theme.Material3.Light.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    </style>
+
+    <style name="Theme.NdoroKojo.Auth" parent="Base.Theme.NdoroKojo">
+        <item name="android:statusBarColor">@color/white</item>
+    </style>
+
+    <style name="Theme.NdoroKojo.Main" parent="Base.Theme.NdoroKojo">
+        <item name="android:statusBarColor">@color/green</item>
+    </style>
+
+    <style name="Theme.NdoroKojo" parent="Base.Theme.NdoroKojo" />
+</resources>
