@@ -219,11 +219,11 @@ class DiedActivity : AppCompatActivity(), OnDateSetListener {
 //            binding.edLimbahLayout.error = "Masukkan Limbah Ternak dengan benar!"
             false
         } else if (binding.edDeadReason.text.isNullOrEmpty()) {
-            alertDialogMessage(this@DiedActivity, "Masukkan Sebab Kematian Ternak benar!")
+            alertDialogMessage(this@DiedActivity, "Masukkan Sebab Kematian Ternak dengan benar!")
 //            binding.edAgeLayout.error = "Masukkan Umur Ternak benar!"
             false
         } else if (binding.edMonthYear.text.isNullOrEmpty()) {
-            alertDialogMessage(this@DiedActivity, "Masukkan Bulan/Tahun Kematian Ternak benar!")
+            alertDialogMessage(this@DiedActivity, "Masukkan Bulan/Tahun Kematian Ternak dengan benar!")
 //            binding.edAgeLayout.error = "Masukkan Umur Ternak benar!"
             false
         } else {
@@ -239,11 +239,11 @@ class DiedActivity : AppCompatActivity(), OnDateSetListener {
 //            binding.edLimbahLayout.error = "Masukkan Limbah Ternak dengan benar!"
             false
         } else if (binding.edDeadReason.text.isNullOrEmpty()) {
-            alertDialogMessage(this@DiedActivity, "Masukkan Sebab Kematian Ternak benar!")
+            alertDialogMessage(this@DiedActivity, "Masukkan Sebab Kematian Ternak dengan benar!")
 //            binding.edAgeLayout.error = "Masukkan Umur Ternak benar!"
             false
         } else if (binding.edMonthYear.text.isNullOrEmpty()) {
-            alertDialogMessage(this@DiedActivity, "Masukkan Bulan/Tahun Kematian Ternak benar!")
+            alertDialogMessage(this@DiedActivity, "Masukkan Bulan/Tahun Kematian Ternak dengan benar!")
 //            binding.edAgeLayout.error = "Masukkan Umur Ternak benar!"
             false
         } else {

@@ -2,16 +2,9 @@ package com.ndorokojo.ui.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.ndorokojo.R
-import com.ndorokojo.data.models.Event
 import com.ndorokojo.data.models.Kandang
 import com.ndorokojo.databinding.ItemKandangColumnBinding
-import com.ndorokojo.databinding.ItemNewsRowBinding
-import com.ndorokojo.ui.main.MainActivity
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -39,13 +32,13 @@ class KandangAdapter : RecyclerView.Adapter<KandangAdapter.ViewHolder>() {
 
     inner class ViewHolder(private var binding: ItemKandangColumnBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(event: Kandang) {
+        fun bind(kandang: Kandang) {
             with(binding) {
-                tvNamaKandang.text = event.name
-                tvTernakAvailable.text = event.livestocksCount
+                tvNamaKandang.text = kandang.name
+                tvTernakAvailable.text = kandang.livestocksCount
 
                 btnEvent.setOnClickListener {
-                    onItemClick?.invoke(Integer.parseInt(event.livestocksCount.toString()))
+                    onItemClick?.invoke(Integer.parseInt(kandang.id.toString()))
                 }
             }
         }

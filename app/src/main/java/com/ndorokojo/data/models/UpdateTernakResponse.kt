@@ -2,10 +2,10 @@ package com.ndorokojo.data.models
 
 import com.google.gson.annotations.SerializedName
 
-data class AllTernakListResponse(
+data class UpdateTernakResponse(
 
 	@field:SerializedName("payload")
-	val ternak: List<Ternak?>? = null,
+	val updateTernak: UpdateTernak? = null,
 
 	@field:SerializedName("success")
 	val success: Boolean? = null,
@@ -14,10 +14,13 @@ data class AllTernakListResponse(
 	val message: String? = null
 )
 
-data class Ternak(
+data class UpdateTernak(
 
 	@field:SerializedName("code")
 	val code: String? = null,
+
+	@field:SerializedName("gender")
+	val gender: Any? = null,
 
 	@field:SerializedName("sold_month_name")
 	val soldMonthName: Any? = null,
@@ -26,13 +29,13 @@ data class Ternak(
 	val createdAt: String? = null,
 
 	@field:SerializedName("availability")
-	val availability: Any? = null,
+	val availability: String? = null,
 
 	@field:SerializedName("sensor_latitude")
-	val sensorLatitude: String? = null,
+	val sensorLatitude: Any? = null,
 
 	@field:SerializedName("sensor_batterypercent")
-	val sensorBatterypercent: String? = null,
+	val sensorBatterypercent: Any? = null,
 
 	@field:SerializedName("dead_type")
 	val deadType: Any? = null,
@@ -46,6 +49,9 @@ data class Ternak(
 	@field:SerializedName("updated_at")
 	val updatedAt: String? = null,
 
+	@field:SerializedName("nominal")
+	val nominal: String? = null,
+
 	@field:SerializedName("dead_reason")
 	val deadReason: Any? = null,
 
@@ -56,25 +62,25 @@ data class Ternak(
 	val acquiredMonth: String? = null,
 
 	@field:SerializedName("dead_year")
-	val deadYear: Any? = null,
+	val deadYear: String? = null,
 
 	@field:SerializedName("acquired_status")
 	val acquiredStatus: String? = null,
 
 	@field:SerializedName("sold_deal_price")
-	val soldDealPrice: Long? = null,
+	val soldDealPrice: Any? = null,
 
 	@field:SerializedName("dead_month")
-	val deadMonth: Any? = null,
+	val deadMonth: String? = null,
 
 	@field:SerializedName("sensor_gps_type")
-	val sensorGpsType: String? = null,
+	val sensorGpsType: Any? = null,
 
 	@field:SerializedName("limbah_id")
 	val limbahId: String? = null,
 
 	@field:SerializedName("sensor_longitude")
-	val sensorLongitude: String? = null,
+	val sensorLongitude: Any? = null,
 
 	@field:SerializedName("type_id")
 	val typeId: String? = null,
@@ -83,7 +89,7 @@ data class Ternak(
 	val acquiredYear: String? = null,
 
 	@field:SerializedName("dead_month_name")
-	val deadMonthName: Any? = null,
+	val deadMonthName: String? = null,
 
 	@field:SerializedName("pakan_id")
 	val pakanId: String? = null,
@@ -98,7 +104,7 @@ data class Ternak(
 	val acquiredMonthName: String? = null,
 
 	@field:SerializedName("sensor_report")
-	val sensorReport: String? = null,
+	val sensorReport: Any? = null,
 
 	@field:SerializedName("sold_month")
 	val soldMonth: Any? = null,

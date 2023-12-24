@@ -16,54 +16,73 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".ui.updateTernak.UpdateTernakActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.NdoroKojo.Main" />
+        <activity
             android:name=".ui.detailkandang.DetailKandangActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.NdoroKojo.Main" />
         <activity
             android:name=".ui.detailnews.DetailNewsActivity"
             android:exported="false"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.NdoroKojo.Main" />
         <activity
             android:name=".ui.buy.BuyActivity"
             android:exported="false"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.NdoroKojo.Main" />
         <activity
             android:name=".ui.sell.SellActivity"
             android:exported="false"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.NdoroKojo.Main" />
         <activity
             android:name=".ui.died.DiedActivity"
             android:exported="false"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.NdoroKojo.Main" />
         <activity
             android:name=".ui.birth.BirthActivity"
             android:exported="false"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.NdoroKojo.Main" />
         <activity
             android:name=".ui.splash.SplashActivity"
             android:exported="false"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.NdoroKojo.Auth" />
         <activity
             android:name=".ui.tambahkandang.TambahKandangActivity"
             android:exported="false"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.NdoroKojo.Main" />
         <activity
             android:name=".ui.InputDataActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.changepassword.ChangePasswordActivity"
             android:exported="false"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.NdoroKojo.Main" />
         <activity
             android:name=".ui.profilesettings.ProfileSettingsActivity"
             android:exported="false"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.NdoroKojo.Main" />
         <activity
             android:name=".ui.updateprofile.UpdateProfileActivity"
             android:exported="false"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.NdoroKojo.Main" />
         <activity
             android:name=".ui.auth.AuthActivity"
             android:exported="true"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.NdoroKojo.Main">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -74,6 +93,7 @@
         <activity
             android:name=".ui.main.MainActivity"
             android:exported="true"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.NdoroKojo.Main" />
     </application>
 

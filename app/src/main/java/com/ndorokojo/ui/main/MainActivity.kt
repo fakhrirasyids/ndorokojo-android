@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import com.ndorokojo.R
+import com.ndorokojo.data.models.DetailKandang
 import com.ndorokojo.data.models.Event
 import com.ndorokojo.data.models.Kandang
 import com.ndorokojo.data.models.RasTernakItem
@@ -34,6 +35,8 @@ import com.ndorokojo.ui.buy.BuyActivity.Companion.EVENT_BUY
 import com.ndorokojo.ui.buy.BuyActivity.Companion.IS_FROM_EXTRA
 import com.ndorokojo.ui.buy.BuyActivity.Companion.IS_FROM_INDIVIDUAL_BUY_EXTRA
 import com.ndorokojo.ui.buy.BuyActivity.Companion.TERNAK_BUY_LIST
+import com.ndorokojo.ui.detailkandang.DetailKandangActivity
+import com.ndorokojo.ui.detailkandang.DetailKandangActivity.Companion.EXTRA_KANDANG_ID
 import com.ndorokojo.ui.detailnews.DetailNewsActivity
 import com.ndorokojo.ui.detailnews.DetailNewsActivity.Companion.KEY_IS_FROM_BREBES
 import com.ndorokojo.ui.detailnews.DetailNewsActivity.Companion.KEY_NEWS_ID
@@ -107,7 +110,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun observeLoading() {
         mainViewModel.isLoading.observe(this@MainActivity) {
-            showLoading(it)
+//            showLoading(it)
+            if (it) {
+                loadingDialog.show()
+            } else {
+                loadingDialog.dismiss()
+            }
         }
     }
 
@@ -119,7 +127,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun observeErrorText() {
         mainViewModel.responseMessage.observe(this@MainActivity) {
-            binding.tvErrorMessage.text = StringBuilder("Error: $it")
+            binding.tvErrorMessage.text = StringBuilder("Error: Gagal terkoneksi dengan internet!")
         }
     }
 
@@ -293,9 +301,14 @@ class MainActivity : AppCompatActivity() {
                         }
 
                         is Result.Error -> {
+                            ternakSeeMoreAdapter.changeAllBackgroundWhite(this@MainActivity)
+                            ternakSeeLessAdapter.changeAllBackgroundWhite(this@MainActivity)
+
                             kandangList.clear()
                             mainViewModel.isLoadingKandang.postValue(false)
                             mainViewModel.responseMessage.postValue(result.error)
+
+                            alertDialogMessage(this@MainActivity, "Gagal terkoneksi dengan internet!", "Gagal mengambil data")
                         }
                     }
                 }
@@ -309,6 +322,8 @@ class MainActivity : AppCompatActivity() {
     private fun setRecyclerViews() {
         binding.rvBtnTernak.apply {
             ternakSeeMoreAdapter.onTernakClick = { ternakId, ternak, position ->
+                TransitionManager.beginDelayedTransition(binding.layoutBtnAction, AutoTransition())
+                binding.layoutBtnAction.visibility = View.GONE
                 mainViewModel.clickedTernakId.postValue(ternakId)
                 mainViewModel.clickedTernak.postValue(ternak)
                 ternakSeeMoreAdapter.changeBackgroundColor(
@@ -328,6 +343,8 @@ class MainActivity : AppCompatActivity() {
             }
 
             ternakSeeLessAdapter.onTernakClick = { ternakId, ternak, position ->
+                TransitionManager.beginDelayedTransition(binding.layoutBtnAction, AutoTransition())
+                binding.layoutBtnAction.visibility = View.GONE
                 mainViewModel.clickedTernakId.postValue(ternakId)
                 mainViewModel.clickedTernak.postValue(ternak)
                 ternakSeeLessAdapter.changeBackgroundColor(
@@ -357,6 +374,12 @@ class MainActivity : AppCompatActivity() {
                 mainViewModel.clickedTernakId.postValue(null)
                 mainViewModel.clickedTernak.postValue(null)
                 mainViewModel.isTernakExpanded.postValue(false)
+            }
+
+            kandangAdapter.onItemClick = { kandangId ->
+                val iDetailKandang = Intent(this@MainActivity, DetailKandangActivity::class.java)
+                iDetailKandang.putExtra(EXTRA_KANDANG_ID, kandangId)
+                activityLauncher.launch(iDetailKandang)
             }
 
             layoutManager = GridLayoutManager(this@MainActivity, 4)

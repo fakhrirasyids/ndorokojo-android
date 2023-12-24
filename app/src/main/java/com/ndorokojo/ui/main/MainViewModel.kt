@@ -84,7 +84,7 @@ class MainViewModel(
                         }
 
                         is Result.Success -> {
-                            isLoading.postValue(false)
+//                            isLoading.postValue(false)
                             ternakList.postValue(result.data.ternakItem as ArrayList<TernakItem>?)
                             getBrebesTodayList()
                         }
@@ -110,7 +110,7 @@ class MainViewModel(
                         }
 
                         is Result.Success -> {
-                            isLoading.postValue(false)
+//                            isLoading.postValue(false)
                             brebesTodayList.postValue(result.data.news as ArrayList<News>?)
                             getDigitalFinanceList()
                         }

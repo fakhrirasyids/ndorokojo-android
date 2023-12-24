@@ -115,4 +115,13 @@
     <string name="tidak_ada_informasi_brebes_today_saat_ini">Tidak ada informasi Brebes Today saat ini</string>
     <string name="tidak_ada_informasi_mengenai_digital_finance_saat_ini">Tidak ada informasi mengenai Digital Finance saat ini</string>
     <string name="asal_kandang">Asal Kandang</string>
+    <string name="total_ternak">Total Ternak : </string>
+    <string name="ternak_hasil_beli">Ternak Hasil Beli :</string>
+    <string name="ternak_dijual">Ternak Dijual :</string>
+    <string name="ternak_mati">Ternak Mati :</string>
+    <string name="daftar_ternak">Daftar Ternak Tersedia</string>
+    <string name="daftar_ternak_terjual">Daftar Ternak Terjual</string>
+    <string name="tidak_ada_data">Tidak ada Data!</string>
+    <string name="daftar_ternak_mati">Daftar Ternak Mati</string>
+    <string name="bulan_tahun_terjual">Bulan/Tahun Terjual</string>
 </resources>

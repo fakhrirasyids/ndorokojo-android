@@ -25,6 +25,7 @@ import com.ndorokojo.data.models.StoreKandangResponse
 import com.ndorokojo.data.models.StoreTernakPayload
 import com.ndorokojo.data.models.StoreTernakResponse
 import com.ndorokojo.data.models.UpdateProfileResponse
+import com.ndorokojo.data.models.UpdateTernakResponse
 import com.ndorokojo.data.models.VillageResponse
 import retrofit2.http.*
 
@@ -174,4 +175,12 @@ interface ApiService {
         @Query("kandang_id") kandang_id: Int
     ): DetailKandangResponse
 
+    @POST("livestocks/status/update")
+    @FormUrlEncoded
+    suspend fun updateTernak(
+        @Field("id") id: Int,
+        @Field("status") status: String,
+        @Field("year") year: String,
+        @Field("month") month: String,
+    ): UpdateTernakResponse
 }

@@ -167,7 +167,7 @@ class TernakRepository(
         emit(Result.Loading)
         try {
             val buyResponse = apiService.buyTernak(
-                liveStockId,kandangId,dealPrice
+                liveStockId, kandangId, dealPrice
             )
             emit(Result.Success(buyResponse))
         } catch (e: Exception) {
@@ -220,11 +220,29 @@ class TernakRepository(
         }
     }
 
-    fun getDetailKandang(kandangId: Int)= liveData {
+    fun getDetailKandang(kandangId: Int) = liveData {
         emit(Result.Loading)
         try {
             val detailKandangResponse = apiService.getDetailKandang(kandangId)
             emit(Result.Success(detailKandangResponse))
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emit(Result.Error(e.message.toString()))
+        }
+    }
+
+    fun updateTernak(
+        id: Int,
+        status: String,
+        year: String,
+        month: String,
+    ) = liveData {
+        emit(Result.Loading)
+        try {
+            val updateTernakResponse = apiService.updateTernak(
+                id, status, year, month
+            )
+            emit(Result.Success(updateTernakResponse))
         } catch (e: Exception) {
             e.printStackTrace()
             emit(Result.Error(e.message.toString()))

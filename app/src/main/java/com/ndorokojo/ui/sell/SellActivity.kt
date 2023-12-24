@@ -3,6 +3,7 @@ package com.ndorokojo.ui.sell
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ArrayAdapter
@@ -92,26 +93,34 @@ class SellActivity : AppCompatActivity() {
 
                         val listTernakString = arrayListOf<String>()
                         for (item in listTernak) {
-
-                            listTernakString.add(item.code.toString())
+                            if (item.soldProposedPrice == null) {
+                                listTernakString.add(item.code.toString())
+                            }
                         }
 
-                        val ternakAdapter = ArrayAdapter(
-                            this@SellActivity,
-                            android.R.layout.simple_spinner_dropdown_item,
-                            listTernakString
-                        )
-                        binding.edTernak.apply {
-                            setAdapter(ternakAdapter)
-                            setOnItemClickListener { _, _, position, _ ->
-                                selectedTernakId.postValue(listTernak[position].id!!)
+                        if (listTernakString.isEmpty()) {
+                            binding.edTernak.isEnabled = false
+                            binding.edTernak.setAdapter(null)
+                            binding.edTernak.setText("")
+                            binding.edTernak.hint = "Tidak ada Ternak"
+                        } else {
+                            val ternakAdapter = ArrayAdapter(
+                                this@SellActivity,
+                                android.R.layout.simple_spinner_dropdown_item,
+                                listTernakString
+                            )
+                            binding.edTernak.apply {
+                                setAdapter(ternakAdapter)
+                                setOnItemClickListener { _, _, position, _ ->
+                                    selectedTernakId.postValue(listTernak[position].id!!)
 
-                                selectedTernakId.observe(this@SellActivity) { selectedTernak ->
-                                    if (selectedTernak != null) {
-                                        for (kandang in MainActivity.kandangList) {
-                                            if (kandang.id == Integer.parseInt(listTernak[position].kandangId.toString())) {
-                                                binding.edAsalKandang.setText(kandang.name)
-                                                break
+                                    selectedTernakId.observe(this@SellActivity) { selectedTernak ->
+                                        if (selectedTernak != null) {
+                                            for (kandang in MainActivity.kandangList) {
+                                                if (kandang.id == Integer.parseInt(listTernak[position].kandangId.toString())) {
+                                                    binding.edAsalKandang.setText(kandang.name)
+                                                    break
+                                                }
                                             }
                                         }
                                     }
