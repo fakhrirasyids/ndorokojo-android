@@ -8,15 +8,16 @@ import androidx.lifecycle.viewModelScope
 import com.ndorokojo.data.models.Event
 import com.ndorokojo.data.models.Kandang
 import com.ndorokojo.data.models.News
+import com.ndorokojo.data.models.SearchResponse
+import com.ndorokojo.data.models.Searched
 import com.ndorokojo.data.models.TernakItem
 import com.ndorokojo.data.repo.TernakRepository
 import com.ndorokojo.utils.Result
 import com.ndorokojo.utils.UserPreferences
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import retrofit2.http.Query
 
 class MainViewModel(
     private val ternakRepository: TernakRepository,
@@ -152,6 +153,31 @@ class MainViewModel(
         }
     }
 
+    val searchResponse = MutableLiveData<Searched>(null)
+
+    fun searchAnything(query: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            ternakRepository.searchAnything(query).asFlow().collect { result ->
+                withContext(Dispatchers.Main) {
+                    when (result) {
+                        is Result.Loading -> {
+                            isLoading.postValue(true)
+                        }
+
+                        is Result.Success -> {
+                            isLoading.postValue(false)
+                            searchResponse.postValue(result.data.searched!!)
+                        }
+
+                        is Result.Error -> {
+                            isLoading.postValue(false)
+                            responseMessage.postValue(result.error)
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     fun getListKandang(typeId: Int) = ternakRepository.getListKandang(typeId)
 

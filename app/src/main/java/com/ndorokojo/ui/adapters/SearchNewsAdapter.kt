@@ -8,16 +8,17 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.ndorokojo.R
 import com.ndorokojo.data.models.Event
+import com.ndorokojo.data.models.SearchedEventItem
 import com.ndorokojo.databinding.ItemNewsRowBinding
 import com.ndorokojo.ui.main.MainActivity
 import java.text.NumberFormat
 import java.util.Locale
 
-class NewsAdapter : RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
-    private val listEvent: ArrayList<Event> = arrayListOf()
-    var onItemClick: ((Event) -> Unit)? = null
+class SearchNewsAdapter : RecyclerView.Adapter<SearchNewsAdapter.ViewHolder>() {
+    private val listEvent: ArrayList<SearchedEventItem> = arrayListOf()
+    var onItemClick: ((SearchedEventItem) -> Unit)? = null
 
-    fun setList(eventList: ArrayList<Event>) {
+    fun setList(eventList: ArrayList<SearchedEventItem>) {
         this.listEvent.clear()
         this.listEvent.addAll(eventList)
         notifyDataSetChanged()
@@ -37,7 +38,7 @@ class NewsAdapter : RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
 
     inner class ViewHolder(private var binding: ItemNewsRowBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(event: Event) {
+        fun bind(event: SearchedEventItem) {
             with(binding) {
                 Glide.with(root).load(event.livestockType?.image)
                     .transition(
@@ -50,12 +51,12 @@ class NewsAdapter : RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
                         var ternakName = ""
 
                         for (item in MainActivity.allTernakItem) {
-                            if (item.id == Integer.parseInt(event.livestockType!!.parentTypeId.toString())) {
+                            if (item.id == Integer.parseInt(event.livestockType.parentTypeId.toString())) {
                                 ternakName = item.livestockType.toString()
                             }
                         }
                         tvTernak.text =
-                            StringBuilder("$ternakName ${event.livestockType!!.livestockType} 1 ekor")
+                            StringBuilder("$ternakName ${event.livestockType.livestockType} 1 ekor")
                     }
                 } else {
                     tvTernak.text = StringBuilder("${event.livestockType?.livestockType} 1 ekor")

@@ -20,6 +20,7 @@ import com.ndorokojo.data.models.ProfileInfoResponse
 import com.ndorokojo.data.models.ProvinceResponse
 import com.ndorokojo.data.models.RegencyResponse
 import com.ndorokojo.data.models.RegisterResponse
+import com.ndorokojo.data.models.SearchResponse
 import com.ndorokojo.data.models.SellResponse
 import com.ndorokojo.data.models.StoreKandangResponse
 import com.ndorokojo.data.models.StoreTernakPayload
@@ -183,4 +184,9 @@ interface ApiService {
         @Field("year") year: String,
         @Field("month") month: String,
     ): UpdateTernakResponse
+
+    @GET("search")
+    suspend fun searchQuery(
+        @Query("search") search: String
+    ): SearchResponse
 }

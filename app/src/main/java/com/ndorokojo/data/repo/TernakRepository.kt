@@ -248,4 +248,17 @@ class TernakRepository(
             emit(Result.Error(e.message.toString()))
         }
     }
+
+    fun searchAnything(query: String) = liveData {
+        emit(Result.Loading)
+        try {
+            val searchResponse = apiService.searchQuery(
+                query
+            )
+            emit(Result.Success(searchResponse))
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emit(Result.Error(e.message.toString()))
+        }
+    }
 }

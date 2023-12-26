@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Ndoro Kojo</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="producer">Produced by\nPemerintah Kabupaten Semarang</string>
+    <string name="producer">Produced by\nDPKH Kabupaten Brebes</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="login">Login</string>
@@ -112,8 +112,11 @@
     <string name="dijual">Dijual</string>
     <string name="pilih_kandang_untuk_hewan">Pilih Kandang untuk Hewan</string>
     <string name="tidak_ada_event_saat_ini">Tidak ada Event saat ini!</string>
+    <string name="tidak_ada_event_search">Tidak ada Event yang cocok dengan Search!</string>
     <string name="tidak_ada_informasi_brebes_today_saat_ini">Tidak ada informasi Brebes Today saat ini</string>
+    <string name="tidak_ada_informasi_brebes_today_search">Tidak ada informasi Brebes Today yang cocok dengan Search!</string>
     <string name="tidak_ada_informasi_mengenai_digital_finance_saat_ini">Tidak ada informasi mengenai Digital Finance saat ini</string>
+    <string name="tidak_ada_informasi_mengenai_digital_finance_search">Tidak ada informasi mengenai Digital Finance yang cocok dengan Search!</string>
     <string name="asal_kandang">Asal Kandang</string>
     <string name="total_ternak">Total Ternak : </string>
     <string name="ternak_hasil_beli">Ternak Hasil Beli :</string>

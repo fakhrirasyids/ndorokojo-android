@@ -11,6 +11,11 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import com.ndorokojo.R
 import com.ndorokojo.data.models.Event
+import com.ndorokojo.data.models.FarmerEvent
+import com.ndorokojo.data.models.Kandang
+import com.ndorokojo.data.models.KandangEvent
+import com.ndorokojo.data.models.LivestockType
+import com.ndorokojo.data.models.SearchedEventItem
 import com.ndorokojo.databinding.ActivityBuyBinding
 import com.ndorokojo.di.Injection
 import com.ndorokojo.ui.main.MainActivity
@@ -39,7 +44,9 @@ class BuyActivity : AppCompatActivity() {
     private lateinit var loadingDialog: AlertDialog
     private var listSelledTernak: ArrayList<Event>? = null
     private var eventBuy: Event? = null
+    private var searchedEventBuy: SearchedEventItem? = null
 
+    private var isFromSearch: Boolean = false
     private var isFromEvent: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,11 +59,39 @@ class BuyActivity : AppCompatActivity() {
             .setCancelable(false)
         loadingDialog = loadingAlert.create()
 
+        isFromSearch = intent.getBooleanExtra(IS_FROM_SEARCH, false)
         isFromEvent = intent.getBooleanExtra(IS_FROM_EXTRA, false)
-        if (isFromEvent) {
-            eventBuy = intent.getParcelableExtra<Event>(EVENT_BUY)
+        if (isFromSearch) {
+            searchedEventBuy = intent.getParcelableExtra<SearchedEventItem>(EVENT_BUY)
+
+            val event = Event()
+            event.id = searchedEventBuy?.id
+            event.code = searchedEventBuy?.code
+
+            val livestockType = LivestockType()
+
+            livestockType.id = searchedEventBuy?.livestockType?.id
+            livestockType.level = searchedEventBuy?.livestockType?.level
+            livestockType.livestockType = searchedEventBuy?.livestockType?.livestockType
+            livestockType.parentTypeId =
+                searchedEventBuy?.livestockType?.parentTypeId.toString()
+
+            event.livestockType = livestockType
+            val kandang = KandangEvent()
+            val farmer = FarmerEvent()
+            farmer.fullname = searchedEventBuy?.kandang?.farmer?.fullname
+            kandang.farmer = farmer
+            event.kandang = kandang
+            event.soldProposedPrice = searchedEventBuy?.soldProposedPrice
+            event.isMine = searchedEventBuy?.isMine
+            
+            eventBuy = event
         } else {
-            listSelledTernak = intent.getParcelableArrayListExtra(TERNAK_BUY_LIST)!!
+            if (isFromEvent) {
+                eventBuy = intent.getParcelableExtra<Event>(EVENT_BUY)
+            } else {
+                listSelledTernak = intent.getParcelableArrayListExtra(TERNAK_BUY_LIST)!!
+            }
         }
 
         observeLoading()
@@ -187,7 +222,7 @@ class BuyActivity : AppCompatActivity() {
                     for (item in kandangList) {
                         listKandangString.add(item.name.toString())
                     }
-                    Log.e("NGEODNGEOD", "setData: $listKandangString", )
+                    Log.e("NGEODNGEOD", "setData: $listKandangString")
 
                     val kandangAdapter = ArrayAdapter(
                         this@BuyActivity,
@@ -218,9 +253,9 @@ class BuyActivity : AppCompatActivity() {
                         if (event.livestockType?.level == "2") {
                             var ternakName = ""
                             for (item in MainActivity.allTernakItem) {
-                                if (item.id == Integer.parseInt(event.livestockType.parentTypeId.toString())) {
+                                if (item.id == Integer.parseInt(event.livestockType!!.parentTypeId.toString())) {
                                     ternakName = item.livestockType.toString()
-                                    buyViewModel.getListKandang(Integer.parseInt(event.livestockType.parentTypeId.toString()))
+                                    buyViewModel.getListKandang(Integer.parseInt(event.livestockType!!.parentTypeId.toString()))
                                     break
                                 }
                             }
@@ -364,5 +399,6 @@ class BuyActivity : AppCompatActivity() {
         const val EVENT_BUY = "event_buy"
         const val IS_FROM_INDIVIDUAL_BUY_EXTRA = "is_from_individual_buy_extra"
         const val IS_FROM_EXTRA = "is_from_extra"
+        const val IS_FROM_SEARCH = "is_from_search"
     }
 }

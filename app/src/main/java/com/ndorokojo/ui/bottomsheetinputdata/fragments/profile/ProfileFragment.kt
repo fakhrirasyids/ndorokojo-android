@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import com.ndorokojo.R
 import com.ndorokojo.databinding.FragmentProfileBinding
 import com.ndorokojo.di.Injection
+import com.ndorokojo.ui.bottomsheetinputdata.BottomSheetInputData
 import com.ndorokojo.ui.bottomsheetinputdata.BottomSheetInputData.Companion.changeFragmentToIndex
 import com.ndorokojo.ui.bottomsheetinputdata.BottomSheetInputDataViewModelFactory
 
@@ -37,6 +38,7 @@ class ProfileFragment : Fragment() {
         loadingDialog = loadingAlert.create()
 
         observeLoading()
+        observeError()
         observeSelectedLocation()
         setData()
 
@@ -51,6 +53,31 @@ class ProfileFragment : Fragment() {
                 loadingDialog.show()
             } else {
                 loadingDialog.dismiss()
+            }
+        }
+    }
+
+    private fun observeError() {
+        profileViewModel.isErrorFetchingProfileInfo.observe(viewLifecycleOwner) {
+            if (it) {
+                val builder = AlertDialog.Builder(requireContext())
+                builder.setCancelable(false)
+
+                with(builder)
+                {
+                    setTitle("Gagal mendapatkan Informasi Profil")
+                    setMessage("Apakah anda ingin memuat ulang informasi profil?")
+                    setPositiveButton("Ya") { dialog, _ ->
+                        dialog.dismiss()
+                        profileViewModel.getProvinceList()
+                    }
+                    setNegativeButton("Tidak") { dialog, _ ->
+                        dialog.dismiss()
+                        BottomSheetInputData.bottomSheetInputData?.dismiss()
+                        BottomSheetInputData.bottomSheetInputData = null
+                    }
+                    show()
+                }
             }
         }
     }

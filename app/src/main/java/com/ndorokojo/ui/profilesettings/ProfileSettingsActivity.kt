@@ -49,7 +49,7 @@ class ProfileSettingsActivity : AppCompatActivity() {
 
     private fun setListeners() {
         binding.apply {
-            toolbar.setNavigationOnClickListener { finish() }
+            toolbar.setNavigationOnClickListener { onBackPressed() }
 
             btnChangeProfile.setOnClickListener {
                 val iUpdateProfile =
@@ -106,5 +106,12 @@ class ProfileSettingsActivity : AppCompatActivity() {
 
             }
         }
+    }
+
+    override fun onBackPressed() {
+        val intent = Intent()
+        setResult(RESULT_OK, intent)
+        finish()
+        super.onBackPressed()
     }
 }

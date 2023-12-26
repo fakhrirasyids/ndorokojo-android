@@ -3,16 +3,14 @@ package com.ndorokojo.ui.adapters
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.ndorokojo.data.models.Kandang
+import com.ndorokojo.data.models.SearchedKandangItem
 import com.ndorokojo.databinding.ItemKandangColumnBinding
-import java.text.NumberFormat
-import java.util.Locale
 
-class KandangAdapter : RecyclerView.Adapter<KandangAdapter.ViewHolder>() {
-    private val listEvent: ArrayList<Kandang> = arrayListOf()
+class SearchKandangAdapter : RecyclerView.Adapter<SearchKandangAdapter.ViewHolder>() {
+    private val listEvent: ArrayList<SearchedKandangItem> = arrayListOf()
     var onItemClick: ((Int) -> Unit)? = null
 
-    fun setList(eventList: ArrayList<Kandang>) {
+    fun setList(eventList: ArrayList<SearchedKandangItem>) {
         this.listEvent.clear()
         this.listEvent.addAll(eventList)
         notifyDataSetChanged()
@@ -32,13 +30,14 @@ class KandangAdapter : RecyclerView.Adapter<KandangAdapter.ViewHolder>() {
 
     inner class ViewHolder(private var binding: ItemKandangColumnBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(kandang: Kandang) {
+        fun bind(kandang: SearchedKandangItem) {
             with(binding) {
+                tvTitle.text = StringBuilder("Nama Kandang ${kandang.livestockType} : ")
                 tvNamaKandang.text = kandang.name
-                tvTernakAvailable.text = kandang.livestocksCount
+                tvTernakAvailable.text = kandang.statistic?.available.toString()
 
                 btnEvent.setOnClickListener {
-                    onItemClick?.invoke(Integer.parseInt(kandang.id.toString()))
+                    onItemClick?.invoke(kandang.id!!)
                 }
             }
         }

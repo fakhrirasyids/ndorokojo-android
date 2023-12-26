@@ -12,9 +12,11 @@ import com.ndorokojo.data.models.Village
 import com.ndorokojo.data.repo.AuthRepository
 import com.ndorokojo.utils.Result
 import com.ndorokojo.utils.UserPreferences
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 
 class ProfileViewModel(
     private val authRepository: AuthRepository,
@@ -49,23 +51,25 @@ class ProfileViewModel(
         getProvinceList()
     }
 
-    private fun getProvinceList() {
-        viewModelScope.launch {
+    fun getProvinceList() {
+        viewModelScope.launch(Dispatchers.IO) {
             authRepository.getAllProvinces().asFlow().collect { result ->
-                when (result) {
-                    is Result.Loading -> {
-                        isLoadingAddress.postValue(true)
-                        isErrorFetchingProfileInfo.postValue(false)
-                    }
+                withContext(Dispatchers.Main) {
+                    when (result) {
+                        is Result.Loading -> {
+                            isLoadingAddress.postValue(true)
+                            isErrorFetchingProfileInfo.postValue(false)
+                        }
 
-                    is Result.Success -> {
-                        getRegencyList(selectedProvinceId.value!!)
-                        listProvince.postValue(result.data.province as ArrayList<Province>?)
-                    }
+                        is Result.Success -> {
+                            getRegencyList(selectedProvinceId.value!!)
+                            listProvince.postValue(result.data.province as ArrayList<Province>?)
+                        }
 
-                    is Result.Error -> {
-                        isLoadingAddress.postValue(false)
-                        isErrorFetchingProfileInfo.postValue(true)
+                        is Result.Error -> {
+                            isLoadingAddress.postValue(false)
+                            isErrorFetchingProfileInfo.postValue(true)
+                        }
                     }
                 }
             }
@@ -73,22 +77,24 @@ class ProfileViewModel(
     }
 
     fun getRegencyList(provinceId: Int) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             authRepository.getAllRegencies(provinceId).asFlow().collect { result ->
-                when (result) {
-                    is Result.Loading -> {
-                        isLoadingAddress.postValue(true)
-                        isErrorFetchingProfileInfo.postValue(false)
-                    }
+                withContext(Dispatchers.Main) {
+                    when (result) {
+                        is Result.Loading -> {
+                            isLoadingAddress.postValue(true)
+                            isErrorFetchingProfileInfo.postValue(false)
+                        }
 
-                    is Result.Success -> {
-                        getDistrictList(selectedRegencyId.value!!)
-                        listRegency.postValue(result.data.regency as ArrayList<Regency>?)
-                    }
+                        is Result.Success -> {
+                            getDistrictList(selectedRegencyId.value!!)
+                            listRegency.postValue(result.data.regency as ArrayList<Regency>?)
+                        }
 
-                    is Result.Error -> {
-                        isLoadingAddress.postValue(false)
-                        isErrorFetchingProfileInfo.postValue(true)
+                        is Result.Error -> {
+                            isLoadingAddress.postValue(false)
+                            isErrorFetchingProfileInfo.postValue(true)
+                        }
                     }
                 }
             }
@@ -96,22 +102,24 @@ class ProfileViewModel(
     }
 
     fun getDistrictList(regencyId: Int) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             authRepository.getAllDistricts(regencyId).asFlow().collect { result ->
-                when (result) {
-                    is Result.Loading -> {
-                        isLoadingAddress.postValue(true)
-                        isErrorFetchingProfileInfo.postValue(false)
-                    }
+                withContext(Dispatchers.Main) {
+                    when (result) {
+                        is Result.Loading -> {
+                            isLoadingAddress.postValue(true)
+                            isErrorFetchingProfileInfo.postValue(false)
+                        }
 
-                    is Result.Success -> {
-                        getVillageList(selectedDistrictId.value!!)
-                        listDistrict.postValue(result.data.district as ArrayList<District>?)
-                    }
+                        is Result.Success -> {
+                            getVillageList(selectedDistrictId.value!!)
+                            listDistrict.postValue(result.data.district as ArrayList<District>?)
+                        }
 
-                    is Result.Error -> {
-                        isLoadingAddress.postValue(false)
-                        isErrorFetchingProfileInfo.postValue(true)
+                        is Result.Error -> {
+                            isLoadingAddress.postValue(false)
+                            isErrorFetchingProfileInfo.postValue(true)
+                        }
                     }
                 }
             }
@@ -119,24 +127,26 @@ class ProfileViewModel(
     }
 
     fun getVillageList(districtId: Int) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             authRepository.getAllVillages(districtId).asFlow().collect { result ->
-                when (result) {
-                    is Result.Loading -> {
-                        isLoadingAddress.postValue(true)
-                        isErrorFetchingProfileInfo.postValue(false)
-                    }
+                withContext(Dispatchers.Main) {
+                    when (result) {
+                        is Result.Loading -> {
+                            isLoadingAddress.postValue(true)
+                            isErrorFetchingProfileInfo.postValue(false)
+                        }
 
-                    is Result.Success -> {
-                        isLoadingAddress.postValue(false)
-                        isErrorFetchingProfileInfo.postValue(false)
+                        is Result.Success -> {
+                            isLoadingAddress.postValue(false)
+                            isErrorFetchingProfileInfo.postValue(false)
 
-                        listVillage.postValue(result.data.village as ArrayList<Village>?)
-                    }
+                            listVillage.postValue(result.data.village as ArrayList<Village>?)
+                        }
 
-                    is Result.Error -> {
-                        isLoadingAddress.postValue(false)
-                        isErrorFetchingProfileInfo.postValue(true)
+                        is Result.Error -> {
+                            isLoadingAddress.postValue(false)
+                            isErrorFetchingProfileInfo.postValue(true)
+                        }
                     }
                 }
             }

@@ -44,7 +44,7 @@
                     android:layout_height="match_parent"
                     android:iconifiedByDefault="false"
                     android:queryBackground="@android:color/transparent"
-                    android:queryHint="Find Resources, etc"
+                    android:queryHint="Temukan event, kandang, dll..."
                     app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
             </androidx.cardview.widget.CardView>
@@ -146,6 +146,15 @@
                     android:padding="12dp"
                     tools:listitem="@layout/item_button_ternak_grid"
                     tools:visibility="gone" />
+
+<!--                <androidx.recyclerview.widget.RecyclerView-->
+<!--                    android:id="@+id/rv_kandang_searched"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:orientation="horizontal"-->
+<!--                    android:layout_marginBottom="8dp"-->
+<!--                    tools:listitem="@layout/item_kandang_column"-->
+<!--                    android:visibility="gone" />-->
 
                 <LinearLayout
                     android:id="@+id/layout_brebes_today"

@@ -19,7 +19,9 @@ import com.ndorokojo.data.repo.AuthRepository
 import com.ndorokojo.data.repo.TernakRepository
 import com.ndorokojo.utils.Result
 import com.ndorokojo.utils.UserPreferences
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class StoreTernakViewModel(
     private val authRepository: AuthRepository,
@@ -81,31 +83,33 @@ class StoreTernakViewModel(
     }
 
     private fun getProvinceList() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             authRepository.getAllProvinces().asFlow().collect { result ->
-                when (result) {
-                    is Result.Loading -> {
-                        isLoadingAddress.postValue(true)
-                        isErrorFetchingProfileInfo.postValue(false)
-                    }
+                withContext(Dispatchers.Main) {
+                    when (result) {
+                        is Result.Loading -> {
+                            isLoadingAddress.postValue(true)
+                            isErrorFetchingProfileInfo.postValue(false)
+                        }
 
-                    is Result.Success -> {
-                        getAllLimbahList()
-                        getAllPakanList()
+                        is Result.Success -> {
+                            getAllLimbahList()
+                            getAllPakanList()
 
-                        isLoadingAddress.postValue(false)
-                        isErrorFetchingProfileInfo.postValue(false)
+                            isLoadingAddress.postValue(false)
+                            isErrorFetchingProfileInfo.postValue(false)
 
-                        listRegency.postValue(null)
-                        listDistrict.postValue(null)
-                        listVillage.postValue(null)
+                            listRegency.postValue(null)
+                            listDistrict.postValue(null)
+                            listVillage.postValue(null)
 
-                        listProvince.postValue(result.data.province as ArrayList<Province>?)
-                    }
+                            listProvince.postValue(result.data.province as ArrayList<Province>?)
+                        }
 
-                    is Result.Error -> {
-                        isLoadingAddress.postValue(false)
-                        isErrorFetchingProfileInfo.postValue(true)
+                        is Result.Error -> {
+                            isLoadingAddress.postValue(false)
+                            isErrorFetchingProfileInfo.postValue(true)
+                        }
                     }
                 }
             }
@@ -113,26 +117,28 @@ class StoreTernakViewModel(
     }
 
     fun getRegencyList(provinceId: Int) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             authRepository.getAllRegencies(provinceId).asFlow().collect { result ->
-                when (result) {
-                    is Result.Loading -> {
-                        isLoadingAddress.postValue(true)
-                        isErrorFetchingProfileInfo.postValue(false)
-                    }
+                withContext(Dispatchers.Main) {
+                    when (result) {
+                        is Result.Loading -> {
+                            isLoadingAddress.postValue(true)
+                            isErrorFetchingProfileInfo.postValue(false)
+                        }
 
-                    is Result.Success -> {
-                        isLoadingAddress.postValue(false)
-                        isErrorFetchingProfileInfo.postValue(false)
+                        is Result.Success -> {
+                            isLoadingAddress.postValue(false)
+                            isErrorFetchingProfileInfo.postValue(false)
 
-                        listDistrict.postValue(null)
-                        listVillage.postValue(null)
-                        listRegency.postValue(result.data.regency as ArrayList<Regency>?)
-                    }
+                            listDistrict.postValue(null)
+                            listVillage.postValue(null)
+                            listRegency.postValue(result.data.regency as ArrayList<Regency>?)
+                        }
 
-                    is Result.Error -> {
-                        isLoadingAddress.postValue(false)
-                        isErrorFetchingProfileInfo.postValue(true)
+                        is Result.Error -> {
+                            isLoadingAddress.postValue(false)
+                            isErrorFetchingProfileInfo.postValue(true)
+                        }
                     }
                 }
             }
@@ -140,25 +146,27 @@ class StoreTernakViewModel(
     }
 
     fun getDistrictList(regencyId: Int) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             authRepository.getAllDistricts(regencyId).asFlow().collect { result ->
-                when (result) {
-                    is Result.Loading -> {
-                        isLoadingAddress.postValue(true)
-                        isErrorFetchingProfileInfo.postValue(false)
-                    }
+                withContext(Dispatchers.Main) {
+                    when (result) {
+                        is Result.Loading -> {
+                            isLoadingAddress.postValue(true)
+                            isErrorFetchingProfileInfo.postValue(false)
+                        }
 
-                    is Result.Success -> {
-                        isLoadingAddress.postValue(false)
-                        isErrorFetchingProfileInfo.postValue(false)
+                        is Result.Success -> {
+                            isLoadingAddress.postValue(false)
+                            isErrorFetchingProfileInfo.postValue(false)
 
-                        listVillage.postValue(null)
-                        listDistrict.postValue(result.data.district as ArrayList<District>?)
-                    }
+                            listVillage.postValue(null)
+                            listDistrict.postValue(result.data.district as ArrayList<District>?)
+                        }
 
-                    is Result.Error -> {
-                        isLoadingAddress.postValue(false)
-                        isErrorFetchingProfileInfo.postValue(true)
+                        is Result.Error -> {
+                            isLoadingAddress.postValue(false)
+                            isErrorFetchingProfileInfo.postValue(true)
+                        }
                     }
                 }
             }
@@ -166,24 +174,26 @@ class StoreTernakViewModel(
     }
 
     fun getVillageList(districtId: Int) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             authRepository.getAllVillages(districtId).asFlow().collect { result ->
-                when (result) {
-                    is Result.Loading -> {
-                        isLoadingAddress.postValue(true)
-                        isErrorFetchingProfileInfo.postValue(false)
-                    }
+                withContext(Dispatchers.Main) {
+                    when (result) {
+                        is Result.Loading -> {
+                            isLoadingAddress.postValue(true)
+                            isErrorFetchingProfileInfo.postValue(false)
+                        }
 
-                    is Result.Success -> {
-                        isLoadingAddress.postValue(false)
-                        isErrorFetchingProfileInfo.postValue(false)
+                        is Result.Success -> {
+                            isLoadingAddress.postValue(false)
+                            isErrorFetchingProfileInfo.postValue(false)
 
-                        listVillage.postValue(result.data.village as ArrayList<Village>?)
-                    }
+                            listVillage.postValue(result.data.village as ArrayList<Village>?)
+                        }
 
-                    is Result.Error -> {
-                        isLoadingAddress.postValue(false)
-                        isErrorFetchingProfileInfo.postValue(true)
+                        is Result.Error -> {
+                            isLoadingAddress.postValue(false)
+                            isErrorFetchingProfileInfo.postValue(true)
+                        }
                     }
                 }
             }
@@ -191,20 +201,22 @@ class StoreTernakViewModel(
     }
 
     private fun getAllLimbahList() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             ternakRepository.getAllLimbah().asFlow().collect { result ->
-                when (result) {
-                    is Result.Loading -> {
-                        isErrorFetchingProfileInfo.postValue(false)
-                    }
+                withContext(Dispatchers.Main) {
+                    when (result) {
+                        is Result.Loading -> {
+                            isErrorFetchingProfileInfo.postValue(false)
+                        }
 
-                    is Result.Success -> {
-                        isErrorFetchingProfileInfo.postValue(false)
-                        listLimbah.postValue(result.data.limbah as ArrayList<Limbah>?)
-                    }
+                        is Result.Success -> {
+                            isErrorFetchingProfileInfo.postValue(false)
+                            listLimbah.postValue(result.data.limbah as ArrayList<Limbah>?)
+                        }
 
-                    is Result.Error -> {
-                        isErrorFetchingProfileInfo.postValue(true)
+                        is Result.Error -> {
+                            isErrorFetchingProfileInfo.postValue(true)
+                        }
                     }
                 }
             }
@@ -212,20 +224,22 @@ class StoreTernakViewModel(
     }
 
     private fun getAllPakanList() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             ternakRepository.getAllPakan().asFlow().collect { result ->
-                when (result) {
-                    is Result.Loading -> {
-                        isErrorFetchingProfileInfo.postValue(false)
-                    }
+                withContext(Dispatchers.Main) {
+                    when (result) {
+                        is Result.Loading -> {
+                            isErrorFetchingProfileInfo.postValue(false)
+                        }
 
-                    is Result.Success -> {
-                        isErrorFetchingProfileInfo.postValue(false)
-                        listPakan.postValue(result.data.pakan as ArrayList<Pakan>?)
-                    }
+                        is Result.Success -> {
+                            isErrorFetchingProfileInfo.postValue(false)
+                            listPakan.postValue(result.data.pakan as ArrayList<Pakan>?)
+                        }
 
-                    is Result.Error -> {
-                        isErrorFetchingProfileInfo.postValue(true)
+                        is Result.Error -> {
+                            isErrorFetchingProfileInfo.postValue(true)
+                        }
                     }
                 }
             }

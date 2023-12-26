@@ -5,10 +5,10 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.RawValue
 
-data class AllEventResponse(
+data class SearchResponse(
 
     @field:SerializedName("payload")
-    val listEvent: List<Event?>? = null,
+    val searched: Searched? = null,
 
     @field:SerializedName("success")
     val success: Boolean? = null,
@@ -18,32 +18,89 @@ data class AllEventResponse(
 )
 
 @Parcelize
-data class LivestockType(
+data class SearchedKandang(
 
-    @field:SerializedName("parent_type_id")
-    var parentTypeId: @RawValue String? = null,
+    @field:SerializedName("village_id")
+    val villageId: String? = null,
 
-    @field:SerializedName("livestock_type")
-    var livestockType: String? = null,
+    @field:SerializedName("address")
+    val address: String? = null,
 
-    @field:SerializedName("image")
-    val image: String? = null,
+    @field:SerializedName("regency_id")
+    val regencyId: String? = null,
 
-    @field:SerializedName("updated_at")
-    val updatedAt: @RawValue Any? = null,
+    @field:SerializedName("type_id")
+    val typeId: String? = null,
 
-    @field:SerializedName("level")
-    var level: String? = null,
+    @field:SerializedName("latitude")
+    val latitude: String? = null,
+
+    @field:SerializedName("luas")
+    val luas: @RawValue Any? = null,
 
     @field:SerializedName("created_at")
-    val createdAt: @RawValue Any? = null,
+    val createdAt: String? = null,
+
+    @field:SerializedName("panjang")
+    val panjang: String? = null,
+
+    @field:SerializedName("sensor_status")
+    val sensorStatus: String? = null,
+
+    @field:SerializedName("updated_at")
+    val updatedAt: String? = null,
+
+    @field:SerializedName("province_id")
+    val provinceId: String? = null,
+
+    @field:SerializedName("farmer_id")
+    val farmerId: String? = null,
+
+    @field:SerializedName("name")
+    val name: String? = null,
+
+    @field:SerializedName("jenis")
+    val jenis: String? = null,
+
+    @field:SerializedName("farmer")
+    val farmer: @RawValue SearchedFarmer? = null,
 
     @field:SerializedName("id")
-    var id: Int? = null
+    val id: Int? = null,
+
+    @field:SerializedName("lebar")
+    val lebar: String? = null,
+
+    @field:SerializedName("district_id")
+    val districtId: String? = null,
+
+    @field:SerializedName("rt_rw")
+    val rtRw: String? = null,
+
+    @field:SerializedName("longitude")
+    val longitude: String? = null
 ) : Parcelable
 
+data class SearchedNewsItem(
+
+    @field:SerializedName("thumbnail")
+    val thumbnail: String? = null,
+
+    @field:SerializedName("updated_at")
+    val updatedAt: String? = null,
+
+    @field:SerializedName("created_at")
+    val createdAt: String? = null,
+
+    @field:SerializedName("id")
+    val id: Int? = null,
+
+    @field:SerializedName("title")
+    val title: String? = null
+)
+
 @Parcelize
-data class FarmerEvent(
+data class SearchedFarmer(
 
     @field:SerializedName("village_id")
     val villageId: String? = null,
@@ -82,7 +139,7 @@ data class FarmerEvent(
     val id: Int? = null,
 
     @field:SerializedName("fullname")
-    var fullname: String? = null,
+    val fullname: String? = null,
 
     @field:SerializedName("district_id")
     val districtId: String? = null,
@@ -101,71 +158,38 @@ data class FarmerEvent(
 ) : Parcelable
 
 @Parcelize
-data class KandangEvent(
+data class SearchedLivestockType(
 
-    @field:SerializedName("village_id")
-    val villageId: String? = null,
+    @field:SerializedName("parent_type_id")
+    val parentTypeId: @RawValue String? = null,
 
-    @field:SerializedName("address")
-    val address: String? = null,
+    @field:SerializedName("livestock_type")
+    val livestockType: String? = null,
 
-    @field:SerializedName("regency_id")
-    val regencyId: String? = null,
-
-    @field:SerializedName("type_id")
-    val typeId: String? = null,
-
-    @field:SerializedName("latitude")
-    val latitude: String? = null,
-
-    @field:SerializedName("created_at")
-    val createdAt: String? = null,
-
-    @field:SerializedName("panjang")
-    val panjang: String? = null,
-
-    @field:SerializedName("sensor_status")
-    val sensorStatus: String? = null,
+    @field:SerializedName("image")
+    val image: String? = null,
 
     @field:SerializedName("updated_at")
-    val updatedAt: String? = null,
+    val updatedAt: @RawValue Any? = null,
 
-    @field:SerializedName("province_id")
-    val provinceId: String? = null,
+    @field:SerializedName("level")
+    val level: String? = null,
 
-    @field:SerializedName("farmer_id")
-    val farmerId: String? = null,
-
-    @field:SerializedName("name")
-    val name: String? = null,
-
-    @field:SerializedName("jenis")
-    val jenis: String? = null,
-
-    @field:SerializedName("farmer")
-    var farmer: FarmerEvent? = null,
+    @field:SerializedName("created_at")
+    val createdAt: @RawValue Any? = null,
 
     @field:SerializedName("id")
-    val id: Int? = null,
-
-    @field:SerializedName("lebar")
-    val lebar: String? = null,
-
-    @field:SerializedName("district_id")
-    val districtId: String? = null,
-
-    @field:SerializedName("rt_rw")
-    val rtRw: String? = null,
-
-    @field:SerializedName("longitude")
-    val longitude: String? = null
+    val id: Int? = null
 ) : Parcelable
 
 @Parcelize
-data class Event(
+data class SearchedEventItem(
 
     @field:SerializedName("code")
-    var code: String? = null,
+    val code: String? = null,
+
+    @field:SerializedName("gender")
+    val gender: @RawValue Any? = null,
 
     @field:SerializedName("sold_month_name")
     val soldMonthName: @RawValue Any? = null,
@@ -189,19 +213,22 @@ data class Event(
     val soldYear: @RawValue Any? = null,
 
     @field:SerializedName("is_mine")
-    var isMine: Boolean? = null,
+    val isMine: Boolean? = null,
 
     @field:SerializedName("sold_proposed_price")
-    var soldProposedPrice: String? = null,
+    val soldProposedPrice: String? = null,
 
     @field:SerializedName("updated_at")
     val updatedAt: String? = null,
+
+    @field:SerializedName("nominal")
+    val nominal: String? = null,
 
     @field:SerializedName("dead_reason")
     val deadReason: @RawValue Any? = null,
 
     @field:SerializedName("id")
-    var id: Int? = null,
+    val id: Int? = null,
 
     @field:SerializedName("acquired_month")
     val acquiredMonth: String? = null,
@@ -237,7 +264,7 @@ data class Event(
     val deadMonthName: @RawValue Any? = null,
 
     @field:SerializedName("livestock_type")
-    var livestockType: @RawValue LivestockType? = null,
+    val livestockType: @RawValue SearchedLivestockType? = null,
 
     @field:SerializedName("pakan_id")
     val pakanId: String? = null,
@@ -246,7 +273,7 @@ data class Event(
     val sensorStatus: String? = null,
 
     @field:SerializedName("kandang")
-    var kandang: @RawValue KandangEvent? = null,
+    val kandang: @RawValue SearchedKandang? = null,
 
     @field:SerializedName("kandang_id")
     val kandangId: String? = null,
@@ -263,3 +290,57 @@ data class Event(
     @field:SerializedName("age")
     val age: String? = null
 ) : Parcelable
+
+data class Searched(
+
+    @field:SerializedName("kandang")
+    val kandang: List<SearchedKandangItem?>? = null,
+
+    @field:SerializedName("today")
+    val today: List<SearchedNewsItem?>? = null,
+
+    @field:SerializedName("event")
+    val event: List<SearchedEventItem?>? = null,
+
+    @field:SerializedName("finance")
+    val finance: List<SearchedNewsItem?>? = null
+)
+
+data class SearchedKandangItem(
+
+    @field:SerializedName("livestock_type")
+    val livestockType: SearchedLivestockType? = null,
+
+    @field:SerializedName("statistic")
+    val statistic: SearchedStatistic? = null,
+
+    @field:SerializedName("type_id")
+    val typeId: String? = null,
+
+    @field:SerializedName("name")
+    val name: String? = null,
+
+    @field:SerializedName("livestocks")
+    val livestocks: List<Any?>? = null,
+
+    @field:SerializedName("id")
+    val id: Int? = null
+)
+
+data class SearchedStatistic(
+
+    @field:SerializedName("total")
+    val total: Int? = null,
+
+    @field:SerializedName("jual")
+    val jual: Int? = null,
+
+    @field:SerializedName("available")
+    val available: Int? = null,
+
+    @field:SerializedName("mati")
+    val mati: Int? = null,
+
+    @field:SerializedName("beli")
+    val beli: Int? = null
+)
