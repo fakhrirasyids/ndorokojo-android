@@ -1,10 +1,13 @@
 package com.ndorokojo.ui.birth
 
 import android.content.Intent
+import android.opengl.Visibility
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
@@ -18,7 +21,7 @@ import com.ndorokojo.utils.Result
 class BirthActivity : AppCompatActivity() {
     private lateinit var binding: ActivityBirthBinding
     private val birthViewModel by viewModels<BirthViewModel> {
-        BirthViewModelFactory.getInstance(
+        BirthViewModelFactory(
             Injection.provideApiService(this)
         )
     }
@@ -46,6 +49,11 @@ class BirthActivity : AppCompatActivity() {
         binding.apply {
             btnSave.setOnClickListener {
                 if (isValid()) {
+                    var pakan = if (binding.cb1.isChecked) binding.cb1.text.toString() else ""
+                    pakan += if (binding.cb2.isChecked) ",${binding.cb2.text}" else ""
+                    pakan += if (binding.cb3.isChecked) ",${binding.cb3.text}" else ""
+                    pakan += if (binding.cb4.isChecked) ",${binding.cb4.text}" else ""
+
                     val builder = AlertDialog.Builder(this@BirthActivity)
                     builder.setCancelable(false)
 
@@ -53,12 +61,13 @@ class BirthActivity : AppCompatActivity() {
                     {
                         setTitle("Apakah semua data sudah benar?")
                         setMessage("Cek dan pastikan ulang semua data sudah benar")
+                        birthViewModel.ternakGender.postValue(edGender.text.toString())
                         birthViewModel.ternakAge.postValue(edAge.text.toString())
 
                         setPositiveButton("Benar") { dialog, _ ->
                             dialog.dismiss()
 
-                            birthViewModel.birthTernak()
+                            birthViewModel.birthTernak(pakan, binding.edJml.text.toString().toInt())
                                 .observe(this@BirthActivity) { result ->
                                     when (result) {
                                         is Result.Loading -> {
@@ -149,39 +158,39 @@ class BirthActivity : AppCompatActivity() {
                     }
                 }
 
-                listPakan.observe(this@BirthActivity) { listPakan ->
-                    if (listPakan != null) {
-                        if (selectedPakanId.value != null) {
-                            for (item in listPakan) {
-                                if (selectedPakanId.value == item.id) {
-                                    edPakan.setText(item.jenisPakan)
-                                }
-                            }
-                        } else {
-                            edPakan.hint = "Pakan Ternak"
-                        }
-
-                        binding.edPakan.isEnabled = true
-                        val listPakanString = arrayListOf<String>()
-                        for (item in listPakan) {
-                            listPakanString.add(item.jenisPakan.toString())
-                        }
-
-                        val pakanAdapter = ArrayAdapter(
-                            this@BirthActivity,
-                            android.R.layout.simple_spinner_dropdown_item,
-                            listPakanString
-                        )
-                        binding.edPakan.apply {
-                            setAdapter(pakanAdapter)
-                            setOnItemClickListener { _, _, position, _ ->
-                                selectedPakanId.postValue(listPakan[position].id!!)
-                            }
-                        }
-                    } else {
-                        edPakan.hint = "Pakan Ternak"
-                    }
-                }
+//                listPakan.observe(this@BirthActivity) { listPakan ->
+//                    if (listPakan != null) {
+//                        if (selectedPakanId.value != null) {
+//                            for (item in listPakan) {
+//                                if (selectedPakanId.value == item.id) {
+//                                    edPakan.setText(item.jenisPakan)
+//                                }
+//                            }
+//                        } else {
+//                            edPakan.hint = "Pakan Ternak"
+//                        }
+//
+//                        binding.edPakan.isEnabled = true
+//                        val listPakanString = arrayListOf<String>()
+//                        for (item in listPakan) {
+//                            listPakanString.add(item.jenisPakan.toString())
+//                        }
+//
+//                        val pakanAdapter = ArrayAdapter(
+//                            this@BirthActivity,
+//                            android.R.layout.simple_spinner_dropdown_item,
+//                            listPakanString
+//                        )
+//                        binding.edPakan.apply {
+//                            setAdapter(pakanAdapter)
+//                            setOnItemClickListener { _, _, position, _ ->
+//                                selectedPakanId.postValue(listPakan[position].id!!)
+//                            }
+//                        }
+//                    } else {
+//                        edPakan.hint = "Pakan Ternak"
+//                    }
+//                }
 
                 listLimbah.observe(this@BirthActivity) { listLimbah ->
                     if (listLimbah != null) {
@@ -217,63 +226,141 @@ class BirthActivity : AppCompatActivity() {
                     }
                 }
 
-                val umurAdapter = ArrayAdapter(
+                val genderAdapter = ArrayAdapter(
                     this@BirthActivity,
                     android.R.layout.simple_spinner_dropdown_item,
                     arrayOf(
-                        getString(R.string.ternak_umur_anak),
-                        getString(R.string.ternak_umur_dewasa)
+                        "JANTAN",
+                        "BETINA"
                     )
                 )
+                edGender.isEnabled = true
+                edGender.setAdapter(genderAdapter)
+
+                edGender.setOnItemClickListener { adapterView, view, i, l ->
+                    edAge.setText("")
+                    val umurAdapter = ArrayAdapter(
+                        this@BirthActivity,
+                        android.R.layout.simple_spinner_dropdown_item,
+                        arrayOf(
+                            getString(R.string.ternak_umur_anak),
+                            getString(R.string.ternak_umur_muda),
+                            getString(R.string.ternak_umur_dewasa),
+                            if (i == 0) "BIBIT PEJANTAN" else "BIBIT INDUK"
+                        )
+                    )
+                    edAge.setAdapter(umurAdapter)
+
+                }
+
                 edAge.isEnabled = true
-                edAge.setAdapter(umurAdapter)
+
+                edAge.setOnClickListener {
+                    if (edGender.text.toString().isEmpty()) {
+                        edAge.clearFocus()
+                        alertDialogMessage(this@BirthActivity, "Pilih Gender terlebih dahulu!")
+                    }
+                }
             }
         }
     }
 
     private fun isValid() = if (MainActivity.ternakListSpecies.isNotEmpty()) {
-        if (binding.edKandang.text.isNullOrEmpty()) {
-            alertDialogMessage(this@BirthActivity,"Masukkan Kandang Ternak dengan benar!")
-//            binding.edKandangLayout.error = "Masukkan Kandang Ternak dengan benar!"
-            false
-        } else if (binding.edTernakRas.text.isNullOrEmpty()) {
-            alertDialogMessage(this@BirthActivity,"Masukkan Ras Ternak dengan benar!")
-//            binding.edTernakRasLayout.error = "Masukkan Ras Ternak dengan benar!"
-            false
-        } else if (binding.edPakan.text.isNullOrEmpty()) {
-            alertDialogMessage(this@BirthActivity,"Masukkan Pakan Ternak dengan benar!")
-//            binding.edPakanLayout.error = "Masukkan Pakan Ternak dengan benar!"
-            false
-        } else if (binding.edLimbah.text.isNullOrEmpty()) {
-            alertDialogMessage(this@BirthActivity,"Masukkan Limbah Ternak dengan benar!")
-//            binding.edLimbahLayout.error = "Masukkan Limbah Ternak dengan benar!"
-            false
-        } else if (binding.edAge.text.isNullOrEmpty()) {
-            alertDialogMessage(this@BirthActivity,"Masukkan Umur Ternak benar!")
-//            binding.edAgeLayout.error = "Masukkan Umur Ternak benar!"
-            false
+        if (binding.edTernakType.text.toString()
+                .lowercase() == "ayam" || binding.edTernakType.text.toString()
+                .lowercase() == "itik"
+        ) {
+            if (binding.edKandang.text.isNullOrEmpty()) {
+                alertDialogMessage(this@BirthActivity, "Masukkan Kandang Ternak dengan benar!")
+                false
+            } else if (binding.edTernakRas.text.isNullOrEmpty()) {
+                alertDialogMessage(this@BirthActivity, "Masukkan Ras Ternak dengan benar!")
+                false
+            } else if (!binding.cb1.isChecked && !binding.cb2.isChecked && !binding.cb3.isChecked) {
+                alertDialogMessage(this@BirthActivity, "Masukkan Pakan Ternak dengan benar!")
+                false
+            } else if (binding.edLimbah.text.isNullOrEmpty()) {
+                alertDialogMessage(this@BirthActivity, "Masukkan Limbah Ternak dengan benar!")
+                false
+            } else if (binding.edAge.text.isNullOrEmpty()) {
+                alertDialogMessage(this@BirthActivity, "Masukkan Umur Ternak benar!")
+                false
+            } else {
+                true
+            }
         } else {
-            true
+            if (binding.edKandang.text.isNullOrEmpty()) {
+                alertDialogMessage(this@BirthActivity, "Masukkan Kandang Ternak dengan benar!")
+                false
+            } else if (binding.edTernakRas.text.isNullOrEmpty()) {
+                alertDialogMessage(this@BirthActivity, "Masukkan Ras Ternak dengan benar!")
+                false
+            } else if (!binding.cb1.isChecked && !binding.cb2.isChecked && !binding.cb3.isChecked && !binding.cb4.isChecked
+            ) {
+                alertDialogMessage(this@BirthActivity, "Masukkan Pakan Ternak dengan benar!")
+                false
+            } else if (binding.edLimbah.text.isNullOrEmpty()) {
+                alertDialogMessage(this@BirthActivity, "Masukkan Limbah Ternak dengan benar!")
+                false
+            } else if (binding.edAge.text.isNullOrEmpty()) {
+                alertDialogMessage(this@BirthActivity, "Masukkan Umur Ternak benar!")
+                false
+            } else {
+                true
+            }
         }
     } else {
-        if (binding.edKandang.text.isNullOrEmpty()) {
-            alertDialogMessage(this@BirthActivity,"Masukkan Kandang Ternak dengan benar!")
-//            binding.edKandangLayout.error = "Masukkan Kandang Ternak dengan benar!"
-            false
-        } else if (binding.edPakan.text.isNullOrEmpty()) {
-            alertDialogMessage(this@BirthActivity,"Masukkan Pakan Ternak dengan benar!")
-//            binding.edPakanLayout.error = "Masukkan Pakan Ternak dengan benar!"
-            false
-        } else if (binding.edLimbah.text.isNullOrEmpty()) {
-            alertDialogMessage(this@BirthActivity,"Masukkan Limbah Ternak dengan benar!")
-//            binding.edLimbahLayout.error = "Masukkan Limbah Ternak dengan benar!"
-            false
-        } else if (binding.edAge.text.isNullOrEmpty()) {
-            alertDialogMessage(this@BirthActivity,"Masukkan Umur Ternak benar!")
-//            binding.edAgeLayout.error = "Masukkan Umur Ternak benar!"
-            false
+        if (binding.edTernakType.text.toString()
+                .lowercase() == "ayam" || binding.edTernakType.text.toString()
+                .lowercase() == "itik"
+        ) {
+            if (binding.edKandang.text.isNullOrEmpty()) {
+                alertDialogMessage(this@BirthActivity, "Masukkan Kandang Ternak dengan benar!")
+                false
+            } else if (!binding.cb1.isChecked && !binding.cb2.isChecked && !binding.cb3.isChecked) {
+                alertDialogMessage(this@BirthActivity, "Masukkan Pakan Ternak dengan benar!")
+                false
+            } else if (binding.edLimbah.text.isNullOrEmpty()) {
+                alertDialogMessage(this@BirthActivity, "Masukkan Limbah Ternak dengan benar!")
+                false
+            } else if (binding.edGender.text.isNullOrEmpty()) {
+                alertDialogMessage(this@BirthActivity, "Masukkan Gender Ternak dengan benar!")
+                false
+            } else if (binding.edAge.text.isNullOrEmpty()) {
+                alertDialogMessage(this@BirthActivity, "Masukkan Umur Ternak dengan benar!")
+                false
+            } else if (binding.edJml.text.isNullOrEmpty() || (binding.edJml.text.toString()
+                    .toInt() == 0)
+            ) {
+                alertDialogMessage(this@BirthActivity, "Masukkan Jumlah Ternak dengan benar!")
+                false
+            } else {
+                true
+            }
         } else {
-            true
+            if (binding.edKandang.text.isNullOrEmpty()) {
+                alertDialogMessage(this@BirthActivity, "Masukkan Kandang Ternak dengan benar!")
+                false
+            } else if (!binding.cb1.isChecked && !binding.cb2.isChecked && !binding.cb3.isChecked && !binding.cb4.isChecked) {
+                alertDialogMessage(this@BirthActivity, "Masukkan Pakan Ternak dengan benar!")
+                false
+            } else if (binding.edLimbah.text.isNullOrEmpty()) {
+                alertDialogMessage(this@BirthActivity, "Masukkan Limbah Ternak dengan benar!")
+                false
+            } else if (binding.edGender.text.isNullOrEmpty()) {
+                alertDialogMessage(this@BirthActivity, "Masukkan Gender Ternak dengan benar!")
+                false
+            } else if (binding.edAge.text.isNullOrEmpty()) {
+                alertDialogMessage(this@BirthActivity, "Masukkan Umur Ternak benar!")
+                false
+            } else if (binding.edJml.text.isNullOrEmpty() || (binding.edJml.text.toString()
+                    .toInt() == 0)
+            ) {
+                alertDialogMessage(this@BirthActivity, "Masukkan Jumlah Ternak dengan benar!")
+                false
+            } else {
+                true
+            }
         }
     }
 
@@ -283,5 +370,12 @@ class BirthActivity : AppCompatActivity() {
         }
 
         binding.edTernakRasLayout.isVisible = MainActivity.ternakListSpecies.isNotEmpty()
+
+        if (binding.edTernakType.text.toString()
+                .lowercase() == "ayam" || binding.edTernakType.text.toString()
+                .lowercase() == "itik"
+        ) {
+            binding.cb4.visibility = View.GONE
+        }
     }
 }

@@ -1,27 +1,46 @@
 package com.ndorokojo.ui.sell
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
-import android.util.Log
+import android.os.Environment
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ArrayAdapter
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import com.ndorokojo.R
 import com.ndorokojo.databinding.ActivitySellBinding
 import com.ndorokojo.di.Injection
 import com.ndorokojo.ui.main.MainActivity
 import com.ndorokojo.utils.Constants
 import com.ndorokojo.utils.Result
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
+import java.io.OutputStream
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class SellActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySellBinding
     private val sellViewModel by viewModels<SellViewModel> {
-        SellViewModelFactory.getInstance(
+        SellViewModelFactory(
             Injection.provideApiService(this)
         )
+    }
+
+
+    private val galleryLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val image = result.data?.data as Uri
+            sellViewModel.imageTernak.postValue(uriToFile(image))
+        }
     }
 
     private lateinit var loadingDialog: AlertDialog
@@ -85,6 +104,10 @@ class SellActivity : AppCompatActivity() {
                 }
             }
 
+            imageTernak.observe(this@SellActivity) {
+                binding.ivTernak.setImageBitmap(BitmapFactory.decodeFile(it.path))
+            }
+
             listTernak.observe(this@SellActivity) { listTernak ->
                 if (listTernak != null) {
                     if (listTernak.isNotEmpty()) {
@@ -145,6 +168,13 @@ class SellActivity : AppCompatActivity() {
 
     private fun setListeners() {
         binding.apply {
+            btnAddTernakImg.setOnClickListener {
+                val iGallery = Intent()
+                iGallery.action = Intent.ACTION_GET_CONTENT
+                iGallery.type = "image/*"
+                galleryLauncher.launch(Intent.createChooser(iGallery, "Pilih Gambar Ternak"))
+            }
+
             btnSave.setOnClickListener {
                 if (isValid()) {
                     sellViewModel.sellProposedPrice.postValue(Integer.parseInt(edPenawaran.text.toString()))
@@ -159,41 +189,117 @@ class SellActivity : AppCompatActivity() {
                         setPositiveButton("Benar") { dialog, _ ->
                             dialog.dismiss()
 
-                            sellViewModel.sellTernak().observe(this@SellActivity) { result ->
-                                when (result) {
-                                    is Result.Loading -> {
-                                        loadingDialog.show()
-                                    }
+                            sellViewModel.updateTernakImage()
+                                .observe(this@SellActivity) { res ->
+                                    when (res) {
+                                        is Result.Loading -> {
+                                            loadingDialog.show()
+                                        }
 
-                                    is Result.Success -> {
-                                        loadingDialog.dismiss()
-                                        val builder = AlertDialog.Builder(this@SellActivity)
-                                        builder.setCancelable(false)
+                                        is Result.Success -> {
+                                            sellViewModel.sellTernak()
+                                                .observe(this@SellActivity) { result ->
+                                                    when (result) {
+                                                        is Result.Loading -> {
+                                                        }
 
-                                        with(builder)
-                                        {
-                                            setTitle("Berhasil Sell Ternak!")
-                                            setMessage("Silahkan melanjutkan untuk mengolah data ternak")
-                                            setPositiveButton("OK") { dialog, _ ->
-                                                dialog.dismiss()
-                                                val intent = Intent()
-                                                setResult(RESULT_OK, intent)
-                                                finish()
-                                            }
-                                            show()
+                                                        is Result.Success -> {
+                                                            loadingDialog.dismiss()
+                                                            val builder =
+                                                                AlertDialog.Builder(this@SellActivity)
+                                                            builder.setCancelable(false)
+
+                                                            with(builder)
+                                                            {
+                                                                setTitle("Berhasil Sell Ternak!")
+                                                                setMessage("Silahkan melanjutkan untuk mengolah data ternak")
+                                                                setPositiveButton("OK") { dialog, _ ->
+                                                                    dialog.dismiss()
+                                                                    val intent = Intent()
+                                                                    setResult(RESULT_OK, intent)
+                                                                    finish()
+                                                                }
+                                                                show()
+                                                            }
+                                                        }
+
+                                                        is Result.Error -> {
+                                                            loadingDialog.dismiss()
+                                                            Constants.alertDialogMessage(
+                                                                this@SellActivity,
+                                                                if (result.error == "HTTP 404 ") "Ternak sudah pernah dijual, Silahkan pilih ternak lain!" else result.error,
+                                                                "Gagal Sell Ternak"
+                                                            )
+                                                        }
+                                                    }
+                                                }
+                                        }
+
+                                        is Result.Error -> {
+                                            loadingDialog.dismiss()
+                                            Constants.alertDialogMessage(
+                                                this@SellActivity,
+                                                res.error,
+                                                "Gagal Sell Ternak"
+                                            )
                                         }
                                     }
-
-                                    is Result.Error -> {
-                                        loadingDialog.dismiss()
-                                        Constants.alertDialogMessage(
-                                            this@SellActivity,
-                                            if (result.error == "HTTP 404 ") "Ternak sudah pernah dijual, Silahkan pilih ternak lain!" else result.error,
-                                            "Gagal Sell Ternak"
-                                        )
-                                    }
                                 }
-                            }
+//                            sellViewModel.sellTernak().observe(this@SellActivity) { result ->
+//                                when (result) {
+//                                    is Result.Loading -> {
+//                                        loadingDialog.show()
+//                                    }
+//
+//                                    is Result.Success -> {
+//                                        sellViewModel.updateTernakImage()
+//                                            .observe(this@SellActivity) { res ->
+//                                                when (res) {
+//                                                    is Result.Loading -> {}
+//                                                    is Result.Success -> {
+//                                                        loadingDialog.dismiss()
+//                                                        val builder =
+//                                                            AlertDialog.Builder(this@SellActivity)
+//                                                        builder.setCancelable(false)
+//
+//                                                        with(builder)
+//                                                        {
+//                                                            setTitle("Berhasil Sell Ternak!")
+//                                                            setMessage("Silahkan melanjutkan untuk mengolah data ternak")
+//                                                            setPositiveButton("OK") { dialog, _ ->
+//                                                                dialog.dismiss()
+//                                                                val intent = Intent()
+//                                                                setResult(RESULT_OK, intent)
+//                                                                finish()
+//                                                            }
+//                                                            show()
+//                                                        }
+//                                                    }
+//
+//                                                    is Result.Error -> {
+//                                                        loadingDialog.dismiss()
+//                                                        Constants.alertDialogMessage(
+//                                                            this@SellActivity,
+////                                                            if (res.error == "HTTP 404 ") "Ternak sudah pernah dijual, Silahkan pilih ternak lain!" else res.error,
+//                                                            res.error,
+//                                                            "Gagal Selsl Ternak"
+//                                                        )
+//                                                    }
+//                                                }
+//
+//                                            }
+//                                    }
+//
+//                                    is Result.Error -> {
+//                                        loadingDialog.dismiss()
+//                                        Constants.alertDialogMessage(
+//                                            this@SellActivity,
+//                                            if (result.error == "HTTP 404 ") "Ternak sudah pernah dijual, Silahkan pilih ternak lain!" else result.error,
+//                                            "Gagal Sell Ternak"
+//                                        )
+//                                    }
+//                                }
+//                            }
                         }
                         setNegativeButton("Salah") { dialog, _ ->
                             dialog.dismiss()
@@ -240,4 +346,26 @@ class SellActivity : AppCompatActivity() {
             true
         }
     }
+
+    private fun uriToFile(uri: Uri): File {
+        val tempFile = File.createTempFile(
+            SimpleDateFormat(
+                "dd-MMM-yyyy",
+                Locale.US
+            ).format(System.currentTimeMillis()),
+            ".jpg",
+            getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        )
+
+        val inputStream = contentResolver.openInputStream(uri) as InputStream
+        val outputStream: OutputStream = FileOutputStream(tempFile)
+        val buf = ByteArray(1024)
+        var len: Int
+        while (inputStream.read(buf).also { len = it } > 0) outputStream.write(buf, 0, len)
+        outputStream.close()
+        inputStream.close()
+
+        return tempFile
+    }
+
 }

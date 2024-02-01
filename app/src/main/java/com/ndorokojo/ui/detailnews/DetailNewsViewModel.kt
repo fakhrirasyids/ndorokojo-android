@@ -14,8 +14,8 @@ import kotlinx.coroutines.launch
 
 class DetailNewsViewModel(
     private val ternakRepository: TernakRepository,
+    private val slug: String,
     private val newsId: Int,
-    private val isFromBrebes: Boolean
 ) : ViewModel() {
     val isLoading = MutableLiveData<Boolean>()
     val newsDetail = MutableLiveData<DetailNews>(null)
@@ -23,16 +23,12 @@ class DetailNewsViewModel(
     val isError = MutableLiveData<Boolean>()
 
     init {
-        if (isFromBrebes) {
-            getBrebesDetailList(newsId)
-        } else {
-            getFinanceDetailList(newsId)
-        }
+        getDetails(slug, newsId)
     }
 
-    fun getBrebesDetailList(id: Int) {
+     fun getDetails(slug: String, id: Int) {
         viewModelScope.launch {
-            ternakRepository.getBrebesDetail(id).asFlow().collect { result ->
+            ternakRepository.getDetailNews(slug, id).asFlow().collect { result ->
                 when (result) {
                     is Result.Loading -> {
                         isLoading.postValue(true)
@@ -55,28 +51,28 @@ class DetailNewsViewModel(
         }
     }
 
-    fun getFinanceDetailList(id: Int) {
-        viewModelScope.launch {
-            ternakRepository.getFinanceDetail(id).asFlow().collect { result ->
-                when (result) {
-                    is Result.Loading -> {
-                        isError.postValue(false)
-                        isLoading.postValue(true)
-                    }
-
-                    is Result.Success -> {
-                        isLoading.postValue(false)
-                        isError.postValue(false)
-                        newsDetail.postValue(result.data.detailNews!!)
-                    }
-
-                    is Result.Error -> {
-                        isLoading.postValue(false)
-                        responseMessage.postValue(result.error)
-                        isError.postValue(true)
-                    }
-                }
-            }
-        }
-    }
+//    fun getFinanceDetailList(id: Int) {
+//        viewModelScope.launch {
+//            ternakRepository.getFinanceDetail(id).asFlow().collect { result ->
+//                when (result) {
+//                    is Result.Loading -> {
+//                        isError.postValue(false)
+//                        isLoading.postValue(true)
+//                    }
+//
+//                    is Result.Success -> {
+//                        isLoading.postValue(false)
+//                        isError.postValue(false)
+//                        newsDetail.postValue(result.data.detailNews!!)
+//                    }
+//
+//                    is Result.Error -> {
+//                        isLoading.postValue(false)
+//                        responseMessage.postValue(result.error)
+//                        isError.postValue(true)
+//                    }
+//                }
+//            }
+//        }
+//    }
 }

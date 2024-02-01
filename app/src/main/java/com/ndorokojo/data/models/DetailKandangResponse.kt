@@ -1,6 +1,9 @@
 package com.ndorokojo.data.models
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
+import kotlinx.parcelize.RawValue
 
 data class DetailKandangResponse(
 
@@ -14,16 +17,17 @@ data class DetailKandangResponse(
     val message: String? = null
 )
 
+@Parcelize
 data class LivestocksItem(
 
     @field:SerializedName("code")
     val code: String? = null,
 
     @field:SerializedName("gender")
-    val gender: Any? = null,
+    val gender: @RawValue Any? = null,
 
     @field:SerializedName("sold_month_name")
-    val soldMonthName: Any? = null,
+    val soldMonthName: @RawValue Any? = null,
 
     @field:SerializedName("created_at")
     val createdAt: String? = null,
@@ -32,16 +36,16 @@ data class LivestocksItem(
     val availability: String? = null,
 
     @field:SerializedName("sensor_latitude")
-    val sensorLatitude: Any? = null,
+    val sensorLatitude: @RawValue Any? = null,
 
     @field:SerializedName("sensor_batterypercent")
-    val sensorBatterypercent: Any? = null,
+    val sensorBatterypercent: @RawValue Any? = null,
 
     @field:SerializedName("dead_type")
-    val deadType: Any? = null,
+    val deadType: @RawValue Any? = null,
 
     @field:SerializedName("sold_year")
-    val soldYear: Any? = null,
+    val soldYear: @RawValue Any? = null,
 
     @field:SerializedName("sold_proposed_price")
     val soldProposedPrice: String? = null,
@@ -53,7 +57,7 @@ data class LivestocksItem(
     val nominal: String? = null,
 
     @field:SerializedName("dead_reason")
-    val deadReason: Any? = null,
+    val deadReason: @RawValue Any? = null,
 
     @field:SerializedName("id")
     val id: Int? = null,
@@ -62,25 +66,25 @@ data class LivestocksItem(
     val acquiredMonth: String? = null,
 
     @field:SerializedName("dead_year")
-    val deadYear: Any? = null,
+    val deadYear: @RawValue Any? = null,
 
     @field:SerializedName("acquired_status")
     var acquiredStatus: String? = null,
 
     @field:SerializedName("sold_deal_price")
-    val soldDealPrice: Any? = null,
+    val soldDealPrice: @RawValue Any? = null,
 
     @field:SerializedName("dead_month")
-    val deadMonth: Any? = null,
+    val deadMonth: @RawValue Any? = null,
 
     @field:SerializedName("sensor_gps_type")
-    val sensorGpsType: Any? = null,
+    val sensorGpsType: @RawValue Any? = null,
 
     @field:SerializedName("limbah_id")
     val limbahId: String? = null,
 
     @field:SerializedName("sensor_longitude")
-    val sensorLongitude: Any? = null,
+    val sensorLongitude: @RawValue Any? = null,
 
     @field:SerializedName("type_id")
     val typeId: String? = null,
@@ -89,7 +93,7 @@ data class LivestocksItem(
     val acquiredYear: String? = null,
 
     @field:SerializedName("dead_month_name")
-    val deadMonthName: Any? = null,
+    val deadMonthName: @RawValue Any? = null,
 
     @field:SerializedName("pakan_id")
     val pakanId: String? = null,
@@ -104,14 +108,14 @@ data class LivestocksItem(
     val acquiredMonthName: String? = null,
 
     @field:SerializedName("sensor_report")
-    val sensorReport: Any? = null,
+    val sensorReport: @RawValue Any? = null,
 
     @field:SerializedName("sold_month")
-    val soldMonth: Any? = null,
+    val soldMonth: @RawValue Any? = null,
 
     @field:SerializedName("age")
     val age: String? = null
-)
+) : Parcelable
 
 data class DetailKandang(
 

@@ -22,7 +22,7 @@ import com.ndorokojo.utils.Result
 class DiedActivity : AppCompatActivity(), OnDateSetListener {
     private lateinit var binding: ActivityDiedBinding
     private val diedViewModel by viewModels<DiedViewModel> {
-        DiedViewModelFactory.getInstance(
+        DiedViewModelFactory(
             Injection.provideApiService(this)
         )
     }

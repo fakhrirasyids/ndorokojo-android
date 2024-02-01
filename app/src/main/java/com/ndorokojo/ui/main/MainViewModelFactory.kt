@@ -1,5 +1,6 @@
 package com.ndorokojo.ui.main
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.ndorokojo.data.remote.ApiService
@@ -7,7 +8,7 @@ import com.ndorokojo.data.repo.AuthRepository
 import com.ndorokojo.data.repo.TernakRepository
 import com.ndorokojo.utils.UserPreferences
 
-class MainViewModelFactory private constructor(
+class MainViewModelFactory constructor(
     private val apiService: ApiService,
     private val userPreferences: UserPreferences,
 ) :
@@ -18,19 +19,5 @@ class MainViewModelFactory private constructor(
             return MainViewModel(TernakRepository(apiService), userPreferences) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
-    }
-
-    companion object {
-        @Volatile
-        private var INSTANCE: MainViewModelFactory? = null
-
-        fun getInstance(
-            apiService: ApiService,
-            userPreferences: UserPreferences,
-        ) = INSTANCE ?: synchronized(this) {
-            val instance = MainViewModelFactory(apiService, userPreferences)
-            INSTANCE = instance
-            instance
-        }
     }
 }

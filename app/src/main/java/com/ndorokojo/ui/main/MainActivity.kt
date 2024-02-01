@@ -17,39 +17,31 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import com.ndorokojo.R
-import com.ndorokojo.data.models.DetailKandang
-import com.ndorokojo.data.models.Event
+import com.ndorokojo.data.models.ArticlesItem
+import com.ndorokojo.data.models.EventsItem
 import com.ndorokojo.data.models.Kandang
 import com.ndorokojo.data.models.RasTernakItem
-import com.ndorokojo.data.models.SearchedEventItem
-import com.ndorokojo.data.models.SearchedKandangItem
-import com.ndorokojo.data.models.SearchedNewsItem
 import com.ndorokojo.data.models.TernakItem
 import com.ndorokojo.databinding.ActivityMainBinding
 import com.ndorokojo.di.Injection
 import com.ndorokojo.ui.adapters.KandangAdapter
 import com.ndorokojo.ui.adapters.NewsAdapter
-import com.ndorokojo.ui.adapters.SearchKandangAdapter
-import com.ndorokojo.ui.adapters.SearchNewsAdapter
 import com.ndorokojo.ui.adapters.SearchSlidersAdapter
-import com.ndorokojo.ui.adapters.SlidersAdapter
+import com.ndorokojo.ui.adapters.SliderCategoriesAdapter
 import com.ndorokojo.ui.adapters.TernakSeeLessAdapter
 import com.ndorokojo.ui.adapters.TernakSeeMoreAdapter
 import com.ndorokojo.ui.birth.BirthActivity
 import com.ndorokojo.ui.bottomsheetinputdata.BottomSheetInputData
-import com.ndorokojo.ui.buy.BuyActivity
 import com.ndorokojo.ui.buy.BuyActivity.Companion.EVENT_BUY
-import com.ndorokojo.ui.buy.BuyActivity.Companion.IS_FROM_EXTRA
-import com.ndorokojo.ui.buy.BuyActivity.Companion.IS_FROM_INDIVIDUAL_BUY_EXTRA
-import com.ndorokojo.ui.buy.BuyActivity.Companion.IS_FROM_SEARCH
-import com.ndorokojo.ui.buy.BuyActivity.Companion.TERNAK_BUY_LIST
+import com.ndorokojo.ui.buylist.BuyListActivity
+import com.ndorokojo.ui.buylist.BuyListActivity.Companion.TERNAK_EVENT_LIST
 import com.ndorokojo.ui.detailkandang.DetailKandangActivity
 import com.ndorokojo.ui.detailkandang.DetailKandangActivity.Companion.EXTRA_KANDANG_ID
 import com.ndorokojo.ui.detailnews.DetailNewsActivity
-import com.ndorokojo.ui.detailnews.DetailNewsActivity.Companion.KEY_IS_FROM_BREBES
-import com.ndorokojo.ui.detailnews.DetailNewsActivity.Companion.KEY_NEWS_ID
 import com.ndorokojo.ui.died.DiedActivity
 import com.ndorokojo.ui.main.tambahkandang.BottomSheetTambahKandang
+import com.ndorokojo.ui.newbuy.NewBuyActivity
+import com.ndorokojo.ui.notif.NotificationActivity
 import com.ndorokojo.ui.profilesettings.ProfileSettingsActivity
 import com.ndorokojo.ui.sell.SellActivity
 import com.ndorokojo.utils.Constants.alertDialogMessage
@@ -58,7 +50,7 @@ import com.ndorokojo.utils.Result
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val mainViewModel by viewModels<MainViewModel> {
-        MainViewModelFactory.getInstance(
+        MainViewModelFactory(
             Injection.provideApiService(this),
             Injection.provideUserPreferences(this)
         )
@@ -67,19 +59,16 @@ class MainActivity : AppCompatActivity() {
     private val ternakSeeMoreAdapter = TernakSeeMoreAdapter()
     private val ternakSeeLessAdapter = TernakSeeLessAdapter()
 
-    private val eventList = arrayListOf<Event>()
+    private val eventList = arrayListOf<EventsItem>()
 
     private lateinit var loadingDialog: AlertDialog
 
     private val eventAdapter = NewsAdapter()
-    private val brebesTodayAdapter = SlidersAdapter()
-    private val digitalFinanceAdapter = SlidersAdapter()
+    private val sliderCategoriesAdapter = SliderCategoriesAdapter()
     private val kandangAdapter = KandangAdapter()
 
-    private val searchEventAdapter = SearchNewsAdapter()
-    private val searchBrebesTodayAdapter = SearchSlidersAdapter()
-    private val searchDigitalFinanceAdapter = SearchSlidersAdapter()
-    private val searchKandangAdapter = SearchKandangAdapter()
+    private val searchEventAdapter = NewsAdapter()
+    private val searchSliderItemAdapter = SearchSlidersAdapter()
 
     private val activityLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -87,6 +76,8 @@ class MainActivity : AppCompatActivity() {
         if (result.resultCode == RESULT_OK) {
             TransitionManager.beginDelayedTransition(binding.layoutBtnAction, AutoTransition())
             binding.layoutBtnAction.visibility = View.GONE
+            binding.svNdoroKojo.setQuery("", false)
+            binding.svNdoroKojo.clearFocus()
             mainViewModel.getAllEventList()
         }
     }
@@ -111,8 +102,7 @@ class MainActivity : AppCompatActivity() {
 
         observeEvents()
         observeTernak()
-        observeBrebesToday()
-        observeDigitalFinance()
+        observeSliderCategories()
         observeSearch()
 
         observeClickedTernak()
@@ -125,7 +115,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun observeLoading() {
         mainViewModel.isLoading.observe(this@MainActivity) {
-//            showLoading(it)
             if (it) {
                 loadingDialog.show()
             } else {
@@ -143,6 +132,12 @@ class MainActivity : AppCompatActivity() {
     private fun observeErrorText() {
         mainViewModel.responseMessage.observe(this@MainActivity) {
             binding.tvErrorMessage.text = StringBuilder("Error: Gagal terkoneksi dengan internet!")
+        }
+    }
+
+    private fun observeSliderCategories() {
+        mainViewModel.sliderCategoryList.observe(this@MainActivity) {
+            sliderCategoriesAdapter.setList(it)
         }
     }
 
@@ -171,42 +166,6 @@ class MainActivity : AppCompatActivity() {
 
             binding.tvEmptyEvent.text = resources.getString(R.string.tidak_ada_event_saat_ini)
             showEmptyEvent(it.isEmpty())
-        }
-    }
-
-    private fun observeBrebesToday() {
-        mainViewModel.brebesTodayList.observe(this@MainActivity) {
-            binding.rvBrebesToday.apply {
-                brebesTodayAdapter.setList(it)
-                adapter = brebesTodayAdapter
-                layoutManager =
-                    LinearLayoutManager(
-                        this@MainActivity,
-                        LinearLayoutManager.HORIZONTAL,
-                        false
-                    )
-            }
-
-            binding.tvEmptyBrebesToday.text = resources.getString(R.string.tidak_ada_informasi_brebes_today_saat_ini)
-            showEmptyBrebesToday(it.isEmpty())
-        }
-    }
-
-    private fun observeDigitalFinance() {
-        mainViewModel.digitalFinanceList.observe(this@MainActivity) {
-            binding.rvDigitalFinance.apply {
-                digitalFinanceAdapter.setList(it)
-                adapter = digitalFinanceAdapter
-                layoutManager =
-                    LinearLayoutManager(
-                        this@MainActivity,
-                        LinearLayoutManager.HORIZONTAL,
-                        false
-                    )
-            }
-
-            binding.tvEmptyDigitalFinance.text = resources.getString(R.string.tidak_ada_informasi_mengenai_digital_finance_saat_ini)
-            showEmptyDigitalFinance(it.isEmpty())
         }
     }
 
@@ -342,7 +301,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setRecyclerViews() {
-        binding.rvBtnTernak.apply {
+        binding.apply {
+
             ternakSeeMoreAdapter.onTernakClick = { ternakId, ternak, position ->
                 TransitionManager.beginDelayedTransition(binding.layoutBtnAction, AutoTransition())
                 binding.layoutBtnAction.visibility = View.GONE
@@ -404,30 +364,25 @@ class MainActivity : AppCompatActivity() {
                 activityLauncher.launch(iDetailKandang)
             }
 
-            layoutManager = GridLayoutManager(this@MainActivity, 4)
+            rvBtnTernak.layoutManager = GridLayoutManager(this@MainActivity, 4)
+
+            rvSliderCategory.adapter = sliderCategoriesAdapter
+            rvSliderCategory.layoutManager = LinearLayoutManager(this@MainActivity)
         }
     }
 
     private fun setListeners() {
         binding.apply {
-            brebesTodayAdapter.onItemClick = { id ->
-                val iNewsDetail = Intent(this@MainActivity, DetailNewsActivity::class.java)
-                iNewsDetail.putExtra(KEY_NEWS_ID, id)
-                iNewsDetail.putExtra(KEY_IS_FROM_BREBES, true)
-                startActivity(iNewsDetail)
-            }
 
-            digitalFinanceAdapter.onItemClick = { id ->
-                val iNewsDetail = Intent(this@MainActivity, DetailNewsActivity::class.java)
-                iNewsDetail.putExtra(KEY_NEWS_ID, id)
-                activityLauncher.launch(iNewsDetail)
+            btnNotif.setOnClickListener {
+                val iNotif = Intent(this@MainActivity, NotificationActivity::class.java)
+                activityLauncher.launch(iNotif)
             }
 
             eventAdapter.onItemClick = { event ->
-                val iBuy = Intent(this@MainActivity, BuyActivity::class.java)
-                iBuy.putExtra(EVENT_BUY, event)
-                iBuy.putExtra(IS_FROM_EXTRA, true)
-                activityLauncher.launch(iBuy)
+                val iNewBuy = Intent(this@MainActivity, NewBuyActivity::class.java)
+                iNewBuy.putExtra(EVENT_BUY, event)
+                activityLauncher.launch(iNewBuy)
             }
 
             btnProfile.setOnClickListener {
@@ -441,38 +396,9 @@ class MainActivity : AppCompatActivity() {
             }
 
             btnBuy.setOnClickListener {
-                val iBuy = Intent(this@MainActivity, BuyActivity::class.java)
-                val iBuyTernakFiltered = arrayListOf<Event>()
-
-                for (item in eventList) {
-//                    if (item.acquiredStatus != "BELI") {
-                    if (!item.isMine!!) {
-                        if (item.livestockType?.level == "1") {
-                            if (item.livestockType!!.id == ternak?.id) {
-                                iBuyTernakFiltered.add(item)
-                            }
-                        } else {
-                            if (Integer.parseInt(item.livestockType?.parentTypeId.toString()) == ternak?.id) {
-                                iBuyTernakFiltered.add(item)
-                            }
-                        }
-//                        }
-                    }
-                }
-
-                if (iBuyTernakFiltered.isEmpty()) {
-                    alertDialogMessage(
-                        this@MainActivity,
-                        "Tidak ada ${
-                            ternak?.livestockType.toString().lowercase()
-                        } yang dijual penjual lain saat ini!",
-                        "Gagal Buy Ternak"
-                    )
-                } else {
-                    iBuy.putExtra(IS_FROM_INDIVIDUAL_BUY_EXTRA, true)
-                    iBuy.putParcelableArrayListExtra(TERNAK_BUY_LIST, iBuyTernakFiltered)
-                    activityLauncher.launch(iBuy)
-                }
+                val iBuy = Intent(this@MainActivity, BuyListActivity::class.java)
+                iBuy.putParcelableArrayListExtra(TERNAK_EVENT_LIST, eventList)
+                activityLauncher.launch(iBuy)
             }
 
             btnBirth.setOnClickListener {
@@ -538,20 +464,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun showEmptyBrebesToday(isEmpty: Boolean) {
-        binding.apply {
-            tvEmptyBrebesToday.isVisible = isEmpty
-            rvBrebesToday.isVisible = !isEmpty
-        }
-    }
-
-    private fun showEmptyDigitalFinance(isEmpty: Boolean) {
-        binding.apply {
-            tvEmptyDigitalFinance.isVisible = isEmpty
-            rvDigitalFinance.isVisible = !isEmpty
-        }
-    }
-
     fun refreshLayoutData() {
         TransitionManager.beginDelayedTransition(binding.layoutBtnAction, AutoTransition())
         binding.layoutBtnAction.visibility = View.GONE
@@ -563,11 +475,13 @@ class MainActivity : AppCompatActivity() {
             setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(keyword: String): Boolean {
                     mainViewModel.searchAnything(keyword)
+                    showSliderCategory(true)
                     return true
                 }
 
                 override fun onQueryTextChange(newText: String?): Boolean {
                     if (newText.isNullOrEmpty()) {
+                        showSliderCategory(false)
                         mainViewModel.searchResponse.postValue(null)
                         mainViewModel.getAllEventList()
                     }
@@ -580,15 +494,13 @@ class MainActivity : AppCompatActivity() {
     private fun observeSearch() {
         mainViewModel.searchResponse.observe(this@MainActivity) { searched ->
             if (searched != null) {
+
                 TransitionManager.beginDelayedTransition(binding.layoutBtnAction, AutoTransition())
                 binding.layoutBtnAction.visibility = View.GONE
                 binding.rvBtnTernak.isVisible = false
-//                binding.rvKandangSearched.isVisible = true
 
-                searchEventAdapter.setList(searched.event as ArrayList<SearchedEventItem>)
-//                searchKandangAdapter.setList(searched.kandang as ArrayList<SearchedKandangItem>)
-                searchBrebesTodayAdapter.setList(searched.today as ArrayList<SearchedNewsItem>)
-                searchDigitalFinanceAdapter.setList(searched.finance as ArrayList<SearchedNewsItem>)
+                searchEventAdapter.setList(searched.event as ArrayList<EventsItem>)
+                searchSliderItemAdapter.setList(searched.sliders as ArrayList<ArticlesItem>)
 
                 binding.apply {
                     if (searched.event.isEmpty()) {
@@ -599,11 +511,9 @@ class MainActivity : AppCompatActivity() {
                         rvEvent.apply {
                             adapter = null
                             searchEventAdapter.onItemClick = { event ->
-                                val iBuy = Intent(this@MainActivity, BuyActivity::class.java)
-                                iBuy.putExtra(EVENT_BUY, event)
-                                iBuy.putExtra(IS_FROM_SEARCH, true)
-//                                iBuy.putExtra(IS_FROM_EXTRA, true)
-                                activityLauncher.launch(iBuy)
+                                val iNewBuy = Intent(this@MainActivity, NewBuyActivity::class.java)
+                                iNewBuy.putExtra(EVENT_BUY, event)
+                                activityLauncher.launch(iNewBuy)
                             }
                             adapter = searchEventAdapter
                             layoutManager =
@@ -615,73 +525,42 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
 
-                    if (searched.today.isEmpty()) {
-                        tvEmptyBrebesToday.text = resources.getString(R.string.tidak_ada_informasi_brebes_today_search)
-                        showEmptyBrebesToday(true)
+                    if (searched.sliders.isEmpty()) {
+                        showEmptyBeritaSearch(true)
                     } else {
-                        showEmptyBrebesToday(false)
-                        rvBrebesToday.apply {
+                        showEmptyBeritaSearch(false)
+                        rvSearchSlider.apply {
                             adapter = null
-                            searchBrebesTodayAdapter.onItemClick = { id ->
+                            searchSliderItemAdapter.onItemClick = { id, slug ->
                                 val iNewsDetail =
                                     Intent(this@MainActivity, DetailNewsActivity::class.java)
-                                iNewsDetail.putExtra(KEY_NEWS_ID, id)
-                                iNewsDetail.putExtra(KEY_IS_FROM_BREBES, true)
+                                iNewsDetail.putExtra(DetailNewsActivity.KEY_NEWS_ID, id)
+                                iNewsDetail.putExtra(DetailNewsActivity.KEY_SLUG, slug)
                                 startActivity(iNewsDetail)
                             }
-                            adapter = searchBrebesTodayAdapter
-                            layoutManager =
-                                LinearLayoutManager(
-                                    this@MainActivity,
-                                    LinearLayoutManager.HORIZONTAL,
-                                    false
-                                )
+                            adapter = searchSliderItemAdapter
+                            layoutManager = GridLayoutManager(this@MainActivity, 2)
                         }
                     }
-
-                    if (searched.finance.isEmpty()) {
-                        tvEmptyDigitalFinance.text = resources.getString(R.string.tidak_ada_informasi_mengenai_digital_finance_search)
-                        showEmptyDigitalFinance(true)
-                    } else {
-                        showEmptyDigitalFinance(false)
-                        rvDigitalFinance.apply {
-                            adapter = null
-                            searchDigitalFinanceAdapter.onItemClick = { id ->
-                                val iNewsDetail =
-                                    Intent(this@MainActivity, DetailNewsActivity::class.java)
-                                iNewsDetail.putExtra(KEY_NEWS_ID, id)
-                                activityLauncher.launch(iNewsDetail)
-                            }
-                            adapter = searchDigitalFinanceAdapter
-                            layoutManager =
-                                LinearLayoutManager(
-                                    this@MainActivity,
-                                    LinearLayoutManager.HORIZONTAL,
-                                    false
-                                )
-                        }
-                    }
-
-//                    rvKandangSearched.apply {
-//                        searchKandangAdapter.onItemClick = { kandangId ->
-//                            val iDetailKandang =
-//                                Intent(this@MainActivity, DetailKandangActivity::class.java)
-//                            iDetailKandang.putExtra(EXTRA_KANDANG_ID, kandangId)
-//                            activityLauncher.launch(iDetailKandang)
-//                        }
-//                        adapter = searchKandangAdapter
-//                        layoutManager =
-//                            LinearLayoutManager(
-//                                this@MainActivity,
-//                                LinearLayoutManager.HORIZONTAL,
-//                                false
-//                            )
-//                    }
                 }
+
             } else {
                 binding.rvBtnTernak.isVisible = true
-//                binding.rvKandangSearched.isVisible = false
             }
+        }
+    }
+
+    private fun showSliderCategory(isSearched: Boolean) {
+        binding.apply {
+            layoutBeritaSearch.isVisible = isSearched
+            rvSliderCategory.isVisible = !isSearched
+        }
+    }
+
+    private fun showEmptyBeritaSearch(isEmpty: Boolean) {
+        binding.apply {
+            tvEmptyNews.isVisible = isEmpty
+            rvSearchSlider.isVisible = !isEmpty
         }
     }
 

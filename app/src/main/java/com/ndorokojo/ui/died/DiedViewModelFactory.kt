@@ -7,7 +7,7 @@ import com.ndorokojo.data.repo.AuthRepository
 import com.ndorokojo.data.repo.TernakRepository
 import com.ndorokojo.utils.UserPreferences
 
-class DiedViewModelFactory private constructor(
+class DiedViewModelFactory constructor(
     private val apiService: ApiService
 ) :
     ViewModelProvider.NewInstanceFactory() {
@@ -17,18 +17,5 @@ class DiedViewModelFactory private constructor(
             return DiedViewModel(TernakRepository(apiService)) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
-    }
-
-    companion object {
-        @Volatile
-        private var INSTANCE: DiedViewModelFactory? = null
-
-        fun getInstance(
-            apiService: ApiService
-        ) = INSTANCE ?: synchronized(this) {
-            val instance = DiedViewModelFactory(apiService)
-            INSTANCE = instance
-            instance
-        }
     }
 }

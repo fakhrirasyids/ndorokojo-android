@@ -31,42 +31,163 @@
             android:orientation="vertical"
             android:padding="20dp">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/ed_ternak_layout"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:boxBackgroundColor="@color/white"
-                app:boxStrokeColor="@color/gray">
+                android:layout_gravity="center"
+                app:cardCornerRadius="12dp"
+                android:layout_margin="8dp"
+                android:elevation="8dp">
 
-                <AutoCompleteTextView
-                    android:id="@+id/ed_ternak"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:focusable="false"
-                    android:hint="@string/pilih_ternak"
-                    android:inputType="none" />
+                    android:orientation="horizontal">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <ImageView
+                        android:id="@+id/iv_ternak"
+                        android:layout_width="200dp"
+                        android:layout_height="200dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ndorokojo_logo" />
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/ed_ternak_type_layout"
-                style="@style/ThemeOverlay.Material3.TextInputEditText.FilledBox.Dense"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:enabled="false"
-                app:boxBackgroundColor="@color/white"
-                app:boxStrokeColor="@color/gray">
+                    <ScrollView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/ed_ternak_type"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:enabled="false"
-                    android:hint="@string/tipe_ternak"
-                    android:inputType="text" />
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:padding="8dp">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Kode Ternak"/>
+
+                            <TextView
+                                android:id="@+id/ed_ternak"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="TRK_XXX"
+                                android:textStyle="bold"
+                                android:textColor="@color/black"/>
+
+                            <TextView
+                                android:layout_marginTop="4dp"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Tipe Ternak"/>
+
+                            <TextView
+                                android:id="@+id/ed_ternak_type"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="DOMBA"
+                                android:textStyle="bold"
+                                android:textColor="@color/black"/>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:visibility="gone"
+                                tools:visibility="visible"
+                                android:id="@+id/ras_layout">
+
+                                <TextView
+                                    android:layout_marginTop="4dp"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Ras Ternak"/>
+
+                                <TextView
+                                    android:id="@+id/ed_ternak_ras_event"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="SAKUB"
+                                    android:textStyle="bold"
+                                    android:textColor="@color/black"/>
+
+                            </LinearLayout>
+
+                            <TextView
+                                android:layout_marginTop="4dp"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Jenis Kelamin"/>
+
+                            <TextView
+                                android:id="@+id/ed_jenis_kelamin"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="JANTAN"
+                                android:textStyle="bold"
+                                android:textColor="@color/black"/>
+
+                            <TextView
+                                android:layout_marginTop="4dp"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Usia Ternak"/>
+
+                            <TextView
+                                android:id="@+id/ed_usia_ternak"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="BIBIT"
+                                android:textStyle="bold"
+                                android:textColor="@color/black"/>
+
+
+                        </LinearLayout>
+
+
+                    </ScrollView>
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+<!--            <com.google.android.material.textfield.TextInputLayout-->
+<!--                android:id="@+id/ed_ternak_layout"-->
+<!--                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                app:boxBackgroundColor="@color/white"-->
+<!--                app:boxStrokeColor="@color/gray">-->
+
+<!--                <AutoCompleteTextView-->
+<!--                    android:id="@+id/ed_ternak"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:enabled="false"-->
+<!--                    android:focusable="false"-->
+<!--                    android:hint="@string/pilih_ternak"-->
+<!--                    android:inputType="none" />-->
+
+<!--            </com.google.android.material.textfield.TextInputLayout>-->
+
+<!--            <com.google.android.material.textfield.TextInputLayout-->
+<!--                android:id="@+id/ed_ternak_type_layout"-->
+<!--                style="@style/ThemeOverlay.Material3.TextInputEditText.FilledBox.Dense"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:enabled="false"-->
+<!--                app:boxBackgroundColor="@color/white"-->
+<!--                app:boxStrokeColor="@color/gray">-->
+
+<!--                <com.google.android.material.textfield.TextInputEditText-->
+<!--                    android:id="@+id/ed_ternak_type"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:enabled="false"-->
+<!--                    android:hint="@string/tipe_ternak"-->
+<!--                    android:inputType="text" />-->
+
+<!--            </com.google.android.material.textfield.TextInputLayout>-->
 
 
             <com.google.android.material.textfield.TextInputLayout
@@ -105,6 +226,25 @@
                     android:layout_height="wrap_content"
                     android:enabled="false"
                     android:hint="Nama Penjual"
+                    android:inputType="text" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/ed_nohp_penjual_layout"
+                style="@style/ThemeOverlay.Material3.TextInputEditText.FilledBox.Dense"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                app:boxBackgroundColor="@color/white"
+                app:boxStrokeColor="@color/gray">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/ed_nohp_penjual"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:hint="No.Hp Penjual"
                     android:inputType="text" />
 
             </com.google.android.material.textfield.TextInputLayout>

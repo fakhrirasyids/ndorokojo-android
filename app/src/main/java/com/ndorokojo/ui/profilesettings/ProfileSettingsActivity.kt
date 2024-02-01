@@ -25,7 +25,7 @@ class ProfileSettingsActivity : AppCompatActivity() {
 //    private val accessToken by lazy { intent.getStringExtra(Constants.USER_ACCESS_TOKEN) }
 
     private val profileSettingsViewModel by viewModels<ProfileSettingsViewModel> {
-        ProfileSettingsViewModelFactory.getInstance(
+        ProfileSettingsViewModelFactory(
             Injection.provideApiService(this),
             Injection.provideUserPreferences(this)
         )

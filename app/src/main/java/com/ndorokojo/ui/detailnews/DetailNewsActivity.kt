@@ -18,12 +18,12 @@ import com.ndorokojo.ui.main.MainViewModelFactory
 class DetailNewsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDetailNewsBinding
     private val id by lazy { intent.getIntExtra(KEY_NEWS_ID, -1) }
-    private val isFromBrebes by lazy { intent.getBooleanExtra(KEY_IS_FROM_BREBES, false) }
+    private val slug by lazy { intent.getStringExtra(KEY_SLUG) }
     private val detailNewsActivity by viewModels<DetailNewsViewModel> {
         DetailNewsViewModelFactory(
             Injection.provideApiService(this),
             id,
-            isFromBrebes
+            slug!!
         )
     }
 
@@ -90,11 +90,12 @@ class DetailNewsActivity : AppCompatActivity() {
         binding.apply {
             toolbar.setNavigationOnClickListener { finish() }
             btnRetry.setOnClickListener {
-                if (isFromBrebes) {
-                    detailNewsActivity.getBrebesDetailList(id)
-                } else {
-                    detailNewsActivity.getFinanceDetailList(id)
-                }
+//                if (isFromBrebes) {
+//                    detailNewsActivity.getBrebesDetailList(id)
+//                } else {
+//                    detailNewsActivity.getFinanceDetailList(id)
+//                }
+                detailNewsActivity.getDetails(slug!!, id)
             }
         }
     }
@@ -115,6 +116,7 @@ class DetailNewsActivity : AppCompatActivity() {
 
     companion object {
         const val KEY_NEWS_ID = "key_news_id"
+        const val KEY_SLUG = "key_slug"
         const val KEY_IS_FROM_BREBES = "key_is_from_brebes"
     }
 }

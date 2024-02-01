@@ -8,6 +8,7 @@ import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.core.view.isVisible
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
@@ -18,6 +19,16 @@ import com.ndorokojo.di.Injection
 import com.ndorokojo.ui.adapters.ReportTernakAdapter
 import com.ndorokojo.ui.main.MainViewModel
 import com.ndorokojo.ui.main.MainViewModelFactory
+import com.ndorokojo.ui.storeternakfree.StoreTernakFreeActivity
+import com.ndorokojo.ui.storeternakfree.StoreTernakFreeActivity.Companion.EXTRA_KANDANG_NAME
+import com.ndorokojo.ui.ternak.ListTernakActivity
+import com.ndorokojo.ui.ternak.ListTernakActivity.Companion.EXTRA_IS_FROM_AVAILABLE
+import com.ndorokojo.ui.ternak.ListTernakActivity.Companion.EXTRA_TERNAK_LIST
+import com.ndorokojo.ui.ternak.ListTernakActivity.Companion.EXTRA_TERNAK_STATUS
+import com.ndorokojo.ui.ternak.ListTernakActivity.Companion.TERNAK_BELI
+import com.ndorokojo.ui.ternak.ListTernakActivity.Companion.TERNAK_JUAL
+import com.ndorokojo.ui.ternak.ListTernakActivity.Companion.TERNAK_MATI
+import com.ndorokojo.ui.ternak.ListTernakActivity.Companion.TERNAK_TANPA_STATUS
 import com.ndorokojo.ui.updateTernak.UpdateTernakActivity
 import com.ndorokojo.ui.updateTernak.UpdateTernakActivity.Companion.EXTRA_TERNAK_ID
 import com.ndorokojo.ui.updateTernak.UpdateTernakActivity.Companion.EXTRA_TERNAK_NAME
@@ -34,8 +45,12 @@ class DetailKandangActivity : AppCompatActivity() {
     }
 
     private val availableAdapter = ReportTernakAdapter()
-    private val soldAdapter = ReportTernakAdapter()
-    private val deadAdapter = ReportTernakAdapter()
+
+    val listTernakAvailable = arrayListOf<LivestocksItem>()
+    val listTernakBuyed = arrayListOf<LivestocksItem>()
+    val listTernakSold = arrayListOf<LivestocksItem>()
+    val listTernakDead = arrayListOf<LivestocksItem>()
+
 
     private val activityLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -93,62 +108,98 @@ class DetailKandangActivity : AppCompatActivity() {
     private fun observeTernakList() {
         detailViewModel.listTernak.observe(this@DetailKandangActivity) { ternakList ->
             if (ternakList != null) {
-                if (ternakList.isNotEmpty()) {
-                    val ternakAvailable = arrayListOf<LivestocksItem>()
-                    val ternakSold = arrayListOf<LivestocksItem>()
-                    val ternakDead = arrayListOf<LivestocksItem>()
+                listTernakAvailable.clear()
+                listTernakSold.clear()
+                listTernakBuyed.clear()
+                listTernakDead.clear()
 
-                    for (ternak in ternakList) {
-                        if (ternak.deadMonth != null) {
-                            ternak.acquiredStatus = "MATI"
-                            ternakDead.add(ternak)
-                        } else if (ternak.soldDealPrice != null) {
-                            ternak.acquiredStatus = "TERJUAL"
-                            ternakSold.add(ternak)
-                        } else {
-                            if (ternak.soldProposedPrice != null) {
-                                ternak.acquiredStatus = "SEDANG DIJUAL"
-                            }
-                            ternakAvailable.add(ternak)
-                        }
+                var counter = 0
+
+                for (ternak in ternakList) {
+                    if (ternak.acquiredStatus == "BELI") {
+                        ternak.acquiredStatus = "BELI"
+                        listTernakBuyed.add(ternak)
                     }
 
-                    detailViewModel.listTernakAvailable.postValue(ternakAvailable)
-                    detailViewModel.listTernakSold.postValue(ternakSold)
-                    detailViewModel.listTernakDead.postValue(ternakDead)
+                    if (ternak.soldDealPrice != null) {
+                        ternak.acquiredStatus = "JUAL"
+                        listTernakSold.add(ternak)
+                    }
+
+                    if (ternak.deadYear != null) {
+                        ternak.acquiredStatus = "MATI"
+                        listTernakDead.add(ternak)
+                    }
+
+                    if (ternak.acquiredStatus == "INPUT" || ternak.acquiredStatus == "LAHIR") {
+                        counter++
+                        listTernakAvailable.add(ternak)
+                    }
                 }
+
+                availableAdapter.setList(ternakList)
+
+                binding.apply {
+                    tvTernakBelumAdaData.text = counter.toString()
+                    tvNoAvailableData.isVisible = ternakList.isEmpty()
+                    rvTernakAvailable.isVisible = ternakList.isNotEmpty()
+                }
+//                if (ternakList.isNotEmpty()) {
+//                    val ternakAvailable = arrayListOf<LivestocksItem>()
+//                    val ternakSold = arrayListOf<LivestocksItem>()
+//                    val ternakDead = arrayListOf<LivestocksItem>()
+//
+//                    for (ternak in ternakList) {
+//                        if (ternak.deadMonth != null) {
+//                            ternak.acquiredStatus = "MATI"
+//                            ternakDead.add(ternak)
+//                        } else if (ternak.soldDealPrice != null) {
+//                            ternak.acquiredStatus = "TERJUAL"
+//                            ternakSold.add(ternak)
+//                        } else {
+//                            if (ternak.soldProposedPrice != null) {
+//                                ternak.acquiredStatus = "SEDANG DIJUAL"
+//                            }
+//                            ternakAvailable.add(ternak)
+//                        }
+//                    }
+//
+//                    detailViewModel.listTernakAvailable.postValue(ternakAvailable)
+//                    detailViewModel.listTernakSold.postValue(ternakSold)
+//                    detailViewModel.listTernakDead.postValue(ternakDead)
+//                }
             }
         }
     }
 
     private fun observeShowableTernak() {
         detailViewModel.apply {
-            listTernakAvailable.observe(this@DetailKandangActivity) {
-                availableAdapter.setList(it)
+//            listTernakAvailable.observe(this@DetailKandangActivity) {
+//                availableAdapter.setList(it)
+//
+//                binding.apply {
+//                    tvNoAvailableData.isVisible = it.isEmpty()
+//                    rvTernakAvailable.isVisible = it.isNotEmpty()
+//                }
+//            }
 
-                binding.apply {
-                    tvNoAvailableData.isVisible = it.isEmpty()
-                    rvTernakAvailable.isVisible = it.isNotEmpty()
-                }
-            }
-
-            listTernakSold.observe(this@DetailKandangActivity) {
-                soldAdapter.setList(it)
-
-                binding.apply {
-                    tvNoAvailableSold.isVisible = it.isEmpty()
-                    rvTernakSold.isVisible = it.isNotEmpty()
-                }
-            }
-
-            listTernakDead.observe(this@DetailKandangActivity) {
-                deadAdapter.setList(it)
-
-                binding.apply {
-                    tvNoAvailableDead.isVisible = it.isEmpty()
-                    rvTernakDead.isVisible = it.isNotEmpty()
-                }
-            }
+//            listTernakSold.observe(this@DetailKandangActivity) {
+//                soldAdapter.setList(it)
+//
+//                binding.apply {
+//                    tvNoAvailableSold.isVisible = it.isEmpty()
+//                    rvTernakSold.isVisible = it.isNotEmpty()
+//                }
+//            }
+//
+//            listTernakDead.observe(this@DetailKandangActivity) {
+//                deadAdapter.setList(it)
+//
+//                binding.apply {
+//                    tvNoAvailableDead.isVisible = it.isEmpty()
+//                    rvTernakDead.isVisible = it.isNotEmpty()
+//                }
+//            }
         }
     }
 
@@ -160,28 +211,40 @@ class DetailKandangActivity : AppCompatActivity() {
                 detailViewModel.getDetailKandang(kandangId)
             }
 
-            availableAdapter.onItemClick = { ternakName, ternakId ->
-                val iUpdateTernak =
-                    Intent(this@DetailKandangActivity, UpdateTernakActivity::class.java)
-                iUpdateTernak.putExtra(EXTRA_TERNAK_ID, ternakId)
-                iUpdateTernak.putExtra(EXTRA_TERNAK_NAME, ternakName)
-                activityLauncher.launch(iUpdateTernak)
+            btnAvailable.setOnClickListener {
+                val iListTernak = Intent(this@DetailKandangActivity, ListTernakActivity::class.java)
+                iListTernak.putExtra(EXTRA_TERNAK_STATUS, TERNAK_TANPA_STATUS)
+                iListTernak.putExtra(EXTRA_IS_FROM_AVAILABLE, true)
+                iListTernak.putParcelableArrayListExtra(EXTRA_TERNAK_LIST, listTernakAvailable)
+                activityLauncher.launch(iListTernak)
             }
 
-            soldAdapter.onItemClick = { _, _ ->
-                alertDialogMessage(
-                    this@DetailKandangActivity,
-                    "Update Ternak ke Terjual hanya bisa dilakukan pada ternak Tersedia!",
-                    "Peringatan"
-                )
+            btnBuy.setOnClickListener {
+                val iListTernak = Intent(this@DetailKandangActivity, ListTernakActivity::class.java)
+                iListTernak.putExtra(EXTRA_TERNAK_STATUS, TERNAK_BELI)
+                iListTernak.putParcelableArrayListExtra(EXTRA_TERNAK_LIST, listTernakBuyed)
+                activityLauncher.launch(iListTernak)
             }
 
-            deadAdapter.onItemClick = { _, _ ->
-                alertDialogMessage(
-                    this@DetailKandangActivity,
-                    "Update Ternak ke Terjual hanya bisa dilakukan pada ternak Tersedia!",
-                    "Peringatan"
-                )
+            btnSold.setOnClickListener {
+                val iListTernak = Intent(this@DetailKandangActivity, ListTernakActivity::class.java)
+                iListTernak.putExtra(EXTRA_TERNAK_STATUS, TERNAK_JUAL)
+                iListTernak.putParcelableArrayListExtra(EXTRA_TERNAK_LIST, listTernakSold)
+                activityLauncher.launch(iListTernak)
+            }
+
+            btnDead.setOnClickListener {
+                val iListTernak = Intent(this@DetailKandangActivity, ListTernakActivity::class.java)
+                iListTernak.putExtra(EXTRA_TERNAK_STATUS, TERNAK_MATI)
+                iListTernak.putParcelableArrayListExtra(EXTRA_TERNAK_LIST, listTernakDead)
+                activityLauncher.launch(iListTernak)
+            }
+
+            fabAddTernak.setOnClickListener {
+                val iAddTernakBeli = Intent(this@DetailKandangActivity, StoreTernakFreeActivity::class.java)
+                iAddTernakBeli.putExtra(EXTRA_KANDANG_ID, kandangId)
+                iAddTernakBeli.putExtra(EXTRA_KANDANG_NAME, tvKandangName.text.toString())
+                activityLauncher.launch(iAddTernakBeli)
             }
         }
     }
@@ -192,21 +255,22 @@ class DetailKandangActivity : AppCompatActivity() {
             layoutManager = LinearLayoutManager(this@DetailKandangActivity)
         }
 
-        binding.rvTernakSold.apply {
-            adapter = soldAdapter
-            layoutManager = LinearLayoutManager(this@DetailKandangActivity)
-        }
-
-        binding.rvTernakDead.apply {
-            adapter = deadAdapter
-            layoutManager = LinearLayoutManager(this@DetailKandangActivity)
-        }
+//        binding.rvTernakSold.apply {
+//            adapter = soldAdapter
+//            layoutManager = LinearLayoutManager(this@DetailKandangActivity)
+//        }
+//
+//        binding.rvTernakDead.apply {
+//            adapter = deadAdapter
+//            layoutManager = LinearLayoutManager(this@DetailKandangActivity)
+//        }
     }
 
     private fun showParentLoading(isParentLoading: Boolean) {
         binding.apply {
             parentProgressbar.isVisible = isParentLoading
             layoutContent.isVisible = !isParentLoading
+            fabAddTernak.isVisible = !isParentLoading
         }
     }
 

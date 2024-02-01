@@ -3,6 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
     id 'kotlin-parcelize'
+    id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin' version '2.0.1'
 }
 
 android {
@@ -39,6 +40,9 @@ android {
 
 dependencies {
 
+    // osmdroid
+    implementation 'org.osmdroid:osmdroid-android:6.1.18'
+
     // SwipeRefreshLayout
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
 
@@ -59,6 +63,9 @@ dependencies {
     // DataStore
     implementation "androidx.datastore:datastore-preferences:1.0.0"
 
+    // Google Map Services
+    implementation 'com.google.android.gms:play-services-maps:18.2.0'
+    implementation 'com.google.android.gms:play-services-location:21.0.1'
 
     implementation 'androidx.core:core-ktx:1.8.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'

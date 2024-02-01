@@ -7,15 +7,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.ndorokojo.R
-import com.ndorokojo.data.models.News
-import com.ndorokojo.data.models.SearchedNewsItem
-import com.ndorokojo.databinding.ItemSlidersRowBinding
+import com.ndorokojo.data.models.ArticlesItem
+import com.ndorokojo.databinding.ItemSlidersSearchRowBinding
 
 class SearchSlidersAdapter : RecyclerView.Adapter<SearchSlidersAdapter.ViewHolder>() {
-    private val listNews: ArrayList<SearchedNewsItem> = arrayListOf()
-    var onItemClick: ((Int) -> Unit)? = null
+    private val listNews: ArrayList<ArticlesItem> = arrayListOf()
+    var onItemClick: ((Int, String) -> Unit)? = null
 
-    fun setList(newsList: ArrayList<SearchedNewsItem>) {
+    fun setList(newsList: ArrayList<ArticlesItem>) {
         this.listNews.clear()
         this.listNews.addAll(newsList)
         notifyDataSetChanged()
@@ -23,7 +22,7 @@ class SearchSlidersAdapter : RecyclerView.Adapter<SearchSlidersAdapter.ViewHolde
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
-            ItemSlidersRowBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            ItemSlidersSearchRowBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         )
     }
 
@@ -33,9 +32,9 @@ class SearchSlidersAdapter : RecyclerView.Adapter<SearchSlidersAdapter.ViewHolde
 
     override fun getItemCount() = listNews.size
 
-    inner class ViewHolder(private var binding: ItemSlidersRowBinding) :
+    inner class ViewHolder(private var binding: ItemSlidersSearchRowBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(news: SearchedNewsItem) {
+        fun bind(news: ArticlesItem) {
             with(binding) {
                 Glide.with(root).load(news.thumbnail)
                     .placeholder(ContextCompat.getDrawable(root.context, R.drawable.ndorokojo_logo))
@@ -47,7 +46,7 @@ class SearchSlidersAdapter : RecyclerView.Adapter<SearchSlidersAdapter.ViewHolde
                 tvTitle.text = news.title
 
                 btnEvent.setOnClickListener {
-                    onItemClick?.invoke(news.id!!)
+                    onItemClick?.invoke(news.id!!, news.slug!!)
                 }
             }
         }

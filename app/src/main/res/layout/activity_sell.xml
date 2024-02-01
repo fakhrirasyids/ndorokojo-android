@@ -109,6 +109,41 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:layout_margin="8dp"
+                    android:elevation="4dp">
+
+                    <ImageView
+                        android:id="@+id/iv_ternak"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ndorokojo_logo" />
+
+                </androidx.cardview.widget.CardView>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_add_ternak_img"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    app:cornerRadius="0dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="@android:color/holo_blue_dark"
+                    android:text="Pasang Foto Ternak"
+                    android:textAllCaps="false" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:gravity="center"
                 android:orientation="horizontal">
 

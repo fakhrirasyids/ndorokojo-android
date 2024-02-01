@@ -246,7 +246,7 @@ class StoreTernakViewModel(
         }
     }
 
-    fun storeTernak() = ternakRepository.storeTernak(
+    fun storeTernak(pakan: String, nominal: Int, gender: String) = ternakRepository.storeTernak(
         StoreTernakPayload(
             kandang = KandangPayload(
                 name = kandangName.value.toString(),
@@ -272,10 +272,12 @@ class StoreTernakViewModel(
                 )
             ),
             livestock = LivestockPayload(
-                pakan_id = selectedPakanId.value!!,
+                pakan = pakan,
                 limbah_id = selectedLimbahId.value!!,
                 age = ternakAge.value.toString(),
                 type_id = selectedRasTypeId.value!!,
+                nominal = nominal,
+                gender = gender
             )
         )
     )

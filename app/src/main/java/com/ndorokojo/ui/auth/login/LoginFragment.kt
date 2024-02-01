@@ -126,42 +126,49 @@ class LoginFragment : Fragment() {
                                         age = result.data.farmer?.age.toString() ?: "",
                                         kelompokTernak = result.data.farmer?.kelompokTernak.toString()
                                             ?: "",
-                                        provinceId = result.data.farmer?.provinceId.toString() ?: "",
+                                        provinceId = result.data.farmer?.provinceId.toString()
+                                            ?: "",
                                         regencyId = result.data.farmer?.regencyId.toString() ?: "",
-                                        districtId = result.data.farmer?.districtId.toString() ?: "",
+                                        districtId = result.data.farmer?.districtId.toString()
+                                            ?: "",
                                         villageId = result.data.farmer?.villageId.toString() ?: "",
                                         isProfileComplete = result.data.farmer?.isProfileComplete!!
                                     )
 
-                                    authViewModel.getIsProfileComplete()
-                                        .observe(viewLifecycleOwner) { isProfileComplete ->
-//                                            Log.e(
-//                                                "LoginFRRagment",
-//                                                "setListeners: $isProfileComplete",
-//                                            )
-                                            if (!isProfileComplete) {
-                                                val iUpdateProfile =
-                                                    Intent(
-                                                        requireContext(),
-                                                        UpdateProfileActivity::class.java
-                                                    )
-//                            iUpdateProfile.putExtra(Constants.USER_ACCESS_TOKEN, accessToken)
-                                                iUpdateProfile.putExtra(
-                                                    Constants.IS_FROM_AUTH,
-                                                    true
-                                                )
-                                                requireActivity().finishAffinity()
-                                                startActivity(iUpdateProfile)
-                                            }
-                                        }
+//                                    authViewModel.getIsProfileComplete()
+//                                        .observe(viewLifecycleOwner) { isProfileComplete ->
+////                                            Log.e(
+////                                                "LoginFRRagment",
+////                                                "setListeners: $isProfileComplete",
+////                                            )
+//                                            if (!isProfileComplete) {
+//                                                val iUpdateProfile =
+//                                                    Intent(
+//                                                        requireContext(),
+//                                                        UpdateProfileActivity::class.java
+//                                                    )
+////                            iUpdateProfile.putExtra(Constants.USER_ACCESS_TOKEN, accessToken)
+//                                                iUpdateProfile.putExtra(
+//                                                    Constants.IS_FROM_AUTH,
+//                                                    true
+//                                                )
+//                                                requireActivity().finishAffinity()
+//                                                startActivity(iUpdateProfile)
+//                                            }
+//                                        }
                                 }
 
                                 is Result.Error -> {
                                     Log.e("LoginFRRagment", "setListeners: ${result.error}")
 
                                     authViewModel.isLoading.postValue(false)
-                                    authViewModel.responseMessage.postValue(result.error)
-                                    alertDialogMessage(requireContext(), result.error)
+                                    authViewModel.responseMessage.postValue(
+                                        if (result.error == "HTTP 401 ") "Kredensial user salah!" else result.error
+                                    )
+//                                    alertDialogMessage(
+//                                        requireContext(),
+//                                        if (result.error == "HTTP 401 ") "Kredensial user salah!" else result.error
+//                                    )
                                 }
                             }
                         }
@@ -186,11 +193,11 @@ class LoginFragment : Fragment() {
     private fun isValid() = if (binding.edUsername.text.isNullOrEmpty()
     ) {
 //        binding.edUsernameLayout.error = "Masukkan username dengan benar!"
-        alertDialogMessage(requireContext(),"Masukkan username dengan benar!")
+        alertDialogMessage(requireContext(), "Masukkan username dengan benar!")
         false
     } else if (binding.edPassword.text.isNullOrEmpty()) {
 //        binding.edPasswordLayout.error = "Masukkan password dengan benar!"
-        alertDialogMessage(requireContext(),"Masukkan password dengan benar!")
+        alertDialogMessage(requireContext(), "Masukkan password dengan benar!")
         false
     } else {
         true

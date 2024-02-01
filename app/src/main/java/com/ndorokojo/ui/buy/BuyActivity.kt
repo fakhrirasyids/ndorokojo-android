@@ -1,21 +1,19 @@
 package com.ndorokojo.ui.buy
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ArrayAdapter
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.ndorokojo.R
-import com.ndorokojo.data.models.Event
-import com.ndorokojo.data.models.FarmerEvent
-import com.ndorokojo.data.models.Kandang
-import com.ndorokojo.data.models.KandangEvent
-import com.ndorokojo.data.models.LivestockType
-import com.ndorokojo.data.models.SearchedEventItem
+import com.ndorokojo.data.models.ItemsItem
 import com.ndorokojo.databinding.ActivityBuyBinding
 import com.ndorokojo.di.Injection
 import com.ndorokojo.ui.main.MainActivity
@@ -28,7 +26,7 @@ import java.util.Locale
 class BuyActivity : AppCompatActivity() {
     private lateinit var binding: ActivityBuyBinding
     private val buyViewModel by viewModels<BuyViewModel> {
-        BuyViewModelFactory.getInstance(
+        BuyViewModelFactory(
             Injection.provideApiService(this),
             Injection.provideUserPreferences(this)
         )
@@ -42,12 +40,8 @@ class BuyActivity : AppCompatActivity() {
     }
 
     private lateinit var loadingDialog: AlertDialog
-    private var listSelledTernak: ArrayList<Event>? = null
-    private var eventBuy: Event? = null
-    private var searchedEventBuy: SearchedEventItem? = null
-
-    private var isFromSearch: Boolean = false
-    private var isFromEvent: Boolean = false
+    private var listSelledTernak: ArrayList<ItemsItem>? = null
+    private var eventBuy: ItemsItem? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,40 +53,7 @@ class BuyActivity : AppCompatActivity() {
             .setCancelable(false)
         loadingDialog = loadingAlert.create()
 
-        isFromSearch = intent.getBooleanExtra(IS_FROM_SEARCH, false)
-        isFromEvent = intent.getBooleanExtra(IS_FROM_EXTRA, false)
-        if (isFromSearch) {
-            searchedEventBuy = intent.getParcelableExtra<SearchedEventItem>(EVENT_BUY)
-
-            val event = Event()
-            event.id = searchedEventBuy?.id
-            event.code = searchedEventBuy?.code
-
-            val livestockType = LivestockType()
-
-            livestockType.id = searchedEventBuy?.livestockType?.id
-            livestockType.level = searchedEventBuy?.livestockType?.level
-            livestockType.livestockType = searchedEventBuy?.livestockType?.livestockType
-            livestockType.parentTypeId =
-                searchedEventBuy?.livestockType?.parentTypeId.toString()
-
-            event.livestockType = livestockType
-            val kandang = KandangEvent()
-            val farmer = FarmerEvent()
-            farmer.fullname = searchedEventBuy?.kandang?.farmer?.fullname
-            kandang.farmer = farmer
-            event.kandang = kandang
-            event.soldProposedPrice = searchedEventBuy?.soldProposedPrice
-            event.isMine = searchedEventBuy?.isMine
-            
-            eventBuy = event
-        } else {
-            if (isFromEvent) {
-                eventBuy = intent.getParcelableExtra<Event>(EVENT_BUY)
-            } else {
-                listSelledTernak = intent.getParcelableArrayListExtra(TERNAK_BUY_LIST)!!
-            }
-        }
+        eventBuy = intent.getParcelableExtra(EVENT_BUY)
 
         observeLoading()
         toggleRasTernak()
@@ -114,41 +75,42 @@ class BuyActivity : AppCompatActivity() {
 
     private fun toggleRasTernak() {
         if (eventBuy == null) {
-            if (listSelledTernak!![0].livestockType?.level == "2") {
+            if (listSelledTernak!![0].livestockType?.level == 2) {
                 binding.edTernakRasLayout.visibility = View.VISIBLE
             } else {
                 binding.edTernakRasLayout.visibility = View.GONE
             }
-        } else {
-            if (eventBuy?.livestockType?.level == "2") {
-                binding.edTernakRasLayout.visibility = View.VISIBLE
-            } else {
-                binding.edTernakRasLayout.visibility = View.GONE
-            }
-            binding.edTernakLayout.isEnabled = false
-            binding.edTernak.isEnabled = false
         }
+//        } else {
+//            if (eventBuy?.livestockType?.level == "2") {
+//                binding.edTernakRasLayout.visibility = View.VISIBLE
+//            } else {
+//                binding.edTernakRasLayout.visibility = View.GONE
+//            }
+//            binding.edTernakLayout.isEnabled = false
+//            binding.edTernak.isEnabled = false
+//        }
     }
 
     private fun setData() {
         if (eventBuy == null) {
 //            if (isFromIndividualBuy) {
-            val listTernakString = arrayListOf<String>()
-            for (item in listSelledTernak!!) {
-                listTernakString.add(item.code.toString())
-            }
-
-            val ternakAdapter = ArrayAdapter(
-                this@BuyActivity,
-                android.R.layout.simple_spinner_dropdown_item,
-                listTernakString
-            )
-            binding.edTernak.apply {
-                setAdapter(ternakAdapter)
-                setOnItemClickListener { _, _, position, _ ->
-                    buyViewModel.buyTernakEvent.postValue(listSelledTernak!![position])
-                }
-            }
+//            val listTernakString = arrayListOf<String>()
+//            for (item in listSelledTernak!!) {
+//                listTernakString.add(item.code.toString())
+//            }
+//
+//            val ternakAdapter = ArrayAdapter(
+//                this@BuyActivity,
+//                android.R.layout.simple_spinner_dropdown_item,
+//                listTernakString
+//            )
+//            binding.edTernak.apply {
+//                setAdapter(ternakAdapter)
+//                setOnItemClickListener { _, _, position, _ ->
+//                    buyViewModel.buyTernakEvent.postValue(listSelledTernak!![position])
+//                }
+//            }
 //            } else {
 //                buyViewModel.listKandang.observe(this@BuyActivity) { kandangList ->
 //                    if (kandangList != null) {
@@ -214,7 +176,7 @@ class BuyActivity : AppCompatActivity() {
                             }
                         }
                     } else {
-                        binding.edKandang.hint = "Pilih Kandang"
+                        binding.edKandang.hint = "Pilih Kandang untuk Ternak"
                     }
 
                     binding.edKandang.isEnabled = true
@@ -222,7 +184,6 @@ class BuyActivity : AppCompatActivity() {
                     for (item in kandangList) {
                         listKandangString.add(item.name.toString())
                     }
-                    Log.e("NGEODNGEOD", "setData: $listKandangString")
 
                     val kandangAdapter = ArrayAdapter(
                         this@BuyActivity,
@@ -237,7 +198,7 @@ class BuyActivity : AppCompatActivity() {
                     }
                 } else {
                     binding.edKandang.isEnabled = false
-                    binding.edKandang.hint = "Pilih Kandang"
+                    binding.edKandang.hint = "Pilih Kandang untuk Ternak"
                 }
             }
         }
@@ -250,7 +211,7 @@ class BuyActivity : AppCompatActivity() {
                     binding.apply {
 //                        if (isFromEvent) {
                         edTernak.setText(event.code)
-                        if (event.livestockType?.level == "2") {
+                        if (event.livestockType?.level == 2) {
                             var ternakName = ""
                             for (item in MainActivity.allTernakItem) {
                                 if (item.id == Integer.parseInt(event.livestockType!!.parentTypeId.toString())) {
@@ -260,10 +221,14 @@ class BuyActivity : AppCompatActivity() {
                                 }
                             }
                             edTernakType.setText(ternakName)
-                            edTernakRas.setText(event.livestockType?.livestockType)
+                            edTernakRasEvent.setText(event.livestockType.livestockType)
+
+                            if (ternakName.isNotEmpty()) {
+                                binding.rasLayout.isVisible = true
+                            }
                         } else {
                             buyViewModel.getListKandang(event.livestockType?.id!!)
-                            edTernakType.setText(event.livestockType?.livestockType)
+                            edTernakType.setText(event.livestockType.livestockType)
                         }
 //                        } else {
 //                            buyViewModel.getListKandang(event.livestockType?.id!!)
@@ -273,7 +238,25 @@ class BuyActivity : AppCompatActivity() {
 //                            }
 //                        }
 
+                        Glide.with(this@BuyActivity)
+                            .load(event.soldImage)
+                            .placeholder(
+                                ContextCompat.getDrawable(
+                                    this@BuyActivity,
+                                    R.drawable.ndorokojo_logo
+                                )
+                            )
+                            .transition(
+                                DrawableTransitionOptions.withCrossFade()
+                            )
+                            .into(binding.ivTernak)
+
+
+
                         edNamaPenjual.setText(event.kandang?.farmer?.fullname)
+                        edNohpPenjual.setText(event.kandang?.farmer?.phone)
+                        edJenisKelamin.text = event.gender
+                        edUsiaTernak.text = event.age
                         edHargaPenawaran.setText(
                             StringBuilder(
                                 "Rp ${
@@ -302,7 +285,7 @@ class BuyActivity : AppCompatActivity() {
 
                     with(builder)
                     {
-                        setTitle("Apakah semua data sudah benar?")
+                        setTitle("Apakah anda yakin untuk mengajukan tawaran ini?")
                         setMessage("Cek dan pastikan ulang semua data sudah benar")
 
                         setPositiveButton("Benar") { dialog, _ ->
@@ -329,8 +312,8 @@ class BuyActivity : AppCompatActivity() {
 
                                                 with(builder)
                                                 {
-                                                    setTitle("Berhasil Buy Ternak!")
-                                                    setMessage("Silahkan melanjutkan untuk mengolah data ternak")
+                                                    setTitle("Berhasil Mengajukan Tawaran Beli!")
+                                                    setMessage("Silahkan tunggu konfirmasi dari penjual.")
                                                     setPositiveButton("OK") { dialog, _ ->
                                                         dialog.dismiss()
                                                         val intent = Intent()
@@ -343,9 +326,9 @@ class BuyActivity : AppCompatActivity() {
 
                                             is Result.Error -> {
                                                 loadingDialog.dismiss()
-                                                Constants.alertDialogMessage(
+                                                alertDialogMessage(
                                                     this@BuyActivity,
-                                                    if (result.error == "HTTP 404 ") "Ternak sudah pernah dijual, Silahkan pilih ternak lain!" else result.error,
+                                                    result.error,
                                                     "Gagal Buy Ternak"
                                                 )
                                             }
@@ -375,17 +358,17 @@ class BuyActivity : AppCompatActivity() {
     }
 
     private fun isValid() = if (binding.edTernak.text.isNullOrEmpty()) {
-        Constants.alertDialogMessage(this@BuyActivity, "Masukkan Ternak dengan benar!")
+        alertDialogMessage(this@BuyActivity, "Masukkan Ternak dengan benar!")
 //            binding.edTernakRasLayout.error = "Masukkan Ras Ternak dengan benar!"
         false
     } else if (binding.edPenawaran.text.isNullOrEmpty()) {
-        Constants.alertDialogMessage(this@BuyActivity, "Masukkan Tawar Harga dengan benar!")
+        alertDialogMessage(this@BuyActivity, "Masukkan Tawar Harga dengan benar!")
 //            binding.edPakanLayout.error = "Masukkan Pakan Ternak dengan benar!"
         false
     } else if (binding.edKandang.text.isNullOrEmpty()) {
-        Constants.alertDialogMessage(
+        alertDialogMessage(
             this@BuyActivity,
-            "Masukkan Kandan untuk Ternak dengan benar!"
+            "Masukkan Kandang untuk Ternak dengan benar!"
         )
 //            binding.edLimbahLayout.error = "Masukkan Limbah Ternak dengan benar!"
         false

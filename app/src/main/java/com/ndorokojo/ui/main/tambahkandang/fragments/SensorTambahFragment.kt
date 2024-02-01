@@ -1,12 +1,16 @@
 package com.ndorokojo.ui.main.tambahkandang.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import com.ndorokojo.R
 import com.ndorokojo.databinding.FragmentSensorBinding
 import com.ndorokojo.ui.bottomsheetinputdata.BottomSheetInputData
@@ -14,6 +18,8 @@ import com.ndorokojo.ui.main.MainActivity
 import com.ndorokojo.ui.main.tambahkandang.BottomSheetTambahKandang
 import com.ndorokojo.ui.main.tambahkandang.BottomSheetTambahKandang.Companion.bottomSheetTambahKandang
 import com.ndorokojo.ui.main.tambahkandang.BottomSheetTambahKandang.Companion.storeKandangViewModel
+import com.ndorokojo.ui.map.PickLocationActivity
+import com.ndorokojo.utils.Constants
 import com.ndorokojo.utils.Result
 
 class SensorTambahFragment : Fragment() {
@@ -26,6 +32,38 @@ class SensorTambahFragment : Fragment() {
 //        )
 //    }
     private lateinit var loadingDialog: AlertDialog
+
+    private val mapLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == AppCompatActivity.RESULT_OK) {
+            val lat = result.data?.extras?.getDouble(PickLocationActivity.EXTRA_LAT, 0.0)
+            val lon = result.data?.extras?.getDouble(PickLocationActivity.EXTRA_LON, 0.0)
+
+            if (lat != null && lon != null) {
+                binding.apply {
+                    storeKandangViewModel?.isSensorLatFilled?.postValue(true)
+                    storeKandangViewModel?.isSensorLonFilled?.postValue(true)
+
+                    storeKandangViewModel?.sensorLat?.postValue(lat.toString())
+                    storeKandangViewModel?.sensorLon?.postValue(lon.toString())
+
+                    layoutLocation.isVisible = false
+                    layoutShowLocation.isVisible = true
+
+                    tvLocationPicked.text = Constants.getAddress(
+                        requireContext(),
+                        lat,
+                        lon
+                    )
+                }
+            } else {
+                storeKandangViewModel?.isSensorLatFilled?.postValue(false)
+                storeKandangViewModel?.isSensorLonFilled?.postValue(false)
+            }
+        }
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -100,6 +138,26 @@ class SensorTambahFragment : Fragment() {
                 }
             }
 
+            layoutLocation.setOnClickListener {
+                mapLauncher.launch(
+                    Intent(
+                        requireContext(),
+                        PickLocationActivity::class.java
+                    )
+                )
+            }
+
+            btnClearLocation.setOnClickListener {
+                storeKandangViewModel?.isSensorLatFilled?.postValue(false)
+                storeKandangViewModel?.isSensorLonFilled?.postValue(false)
+
+                storeKandangViewModel?.sensorLat?.postValue(null)
+                storeKandangViewModel?.sensorLon?.postValue(null)
+
+                layoutLocation.isVisible = true
+                layoutShowLocation.isVisible = false
+            }
+
             btnSave.setOnClickListener {
                 if (isValid()) {
                     val builder = AlertDialog.Builder(requireContext())
@@ -108,8 +166,8 @@ class SensorTambahFragment : Fragment() {
                     storeKandangViewModel?.apply {
                         sensorStatus.postValue(binding.edStatus.text.toString())
                         if (isSensorStatusTerpasang.value!!) {
-                            sensorLat.postValue(if (binding.edLatitude.text.isNullOrEmpty()) null else binding.edLatitude.text.toString())
-                            sensorLon.postValue(if (binding.edLongitude.text.isNullOrEmpty()) null else binding.edLongitude.text.toString())
+//                            sensorLat.postValue(if (binding.edLatitude.text.isNullOrEmpty()) null else binding.edLatitude.text.toString())
+//                            sensorLon.postValue(if (binding.edLongitude.text.isNullOrEmpty()) null else binding.edLongitude.text.toString())
                             sensorBattery.postValue(
                                 if (binding.edBattery.text.isNullOrEmpty()) null else Integer.parseInt(
                                     binding.edBattery.text.toString()
@@ -187,13 +245,18 @@ class SensorTambahFragment : Fragment() {
         binding.edStatusLayout.error = "Masukkan Sensor Status dengan benar!"
         false
     } else if (storeKandangViewModel?.isSensorStatusTerpasang?.value != null && storeKandangViewModel?.isSensorStatusTerpasang?.value!!) {
-        if (binding.edLatitude.text.isNullOrEmpty()) {
-            binding.edLatitudeLayout.error = "Masukkan Sensor Latitude dengan benar!"
+//        if (binding.edLatitude.text.isNullOrEmpty()) {
+//            binding.edLatitudeLayout.error = "Masukkan Sensor Latitude dengan benar!"
+//            false
+//        } else if (binding.edLongitude.text.isNullOrEmpty()) {
+//            binding.edLongitudeLayout.error = "Masukkan Sensor Longitude dengan benar!"
+//            false
+//        }
+        if (!binding.layoutShowLocation.isVisible) {
+            alertDialogMessage("Masukkan Lokasi dengan benar!")
             false
-        } else if (binding.edLongitude.text.isNullOrEmpty()) {
-            binding.edLongitudeLayout.error = "Masukkan Sensor Longitude dengan benar!"
-            false
-        } else if (binding.edBattery.text.isNullOrEmpty()) {
+        }
+        else if (binding.edBattery.text.isNullOrEmpty()) {
             binding.edBatteryLayout.error = "Masukkan Sensor Battery Percent dengan benar!"
             false
         } else if (binding.edGpsType.text.isNullOrEmpty()) {
@@ -227,13 +290,13 @@ class SensorTambahFragment : Fragment() {
                 binding.edStatusLayout.error = null
             }
 
-            isSensorLatFilled.observe(viewLifecycleOwner) {
-                binding.edLatitudeLayout.error = null
-            }
-
-            isSensorLonFilled.observe(viewLifecycleOwner) {
-                binding.edLongitudeLayout.error = null
-            }
+//            isSensorLatFilled.observe(viewLifecycleOwner) {
+//                binding.edLatitudeLayout.error = null
+//            }
+//
+//            isSensorLonFilled.observe(viewLifecycleOwner) {
+//                binding.edLongitudeLayout.error = null
+//            }
 
             isSensorBatteryFilled.observe(viewLifecycleOwner) {
                 binding.edBatteryLayout.error = null
@@ -305,17 +368,25 @@ class SensorTambahFragment : Fragment() {
     private fun enableSensorInput(isTerpasang: Boolean) {
         binding.apply {
             if (!isTerpasang) {
-                edLatitude.setText("")
-                edLongitude.setText("")
+                storeKandangViewModel?.isSensorLatFilled?.postValue(false)
+                storeKandangViewModel?.isSensorLonFilled?.postValue(false)
+
+                storeKandangViewModel?.sensorLat?.postValue(null)
+                storeKandangViewModel?.sensorLon?.postValue(null)
+//                edLatitude.setText("")
+//                edLongitude.setText("")
+                layoutLocation.isVisible = true
+                layoutShowLocation.isVisible = false
                 edBattery.setText("")
                 edGpsType.setText("")
                 edReport.setText("")
             }
 
-            edLatitude.isEnabled = isTerpasang
-            edLatitudeLayout.isEnabled = isTerpasang
-            edLongitude.isEnabled = isTerpasang
-            edLongitudeLayout.isEnabled = isTerpasang
+//            edLatitude.isEnabled = isTerpasang
+//            edLatitudeLayout.isEnabled = isTerpasang
+//            edLongitude.isEnabled = isTerpasang
+//            edLongitudeLayout.isEnabled = isTerpasang
+            layoutLocation.isEnabled = isTerpasang
             edBattery.isEnabled = isTerpasang
             edBatteryLayout.isEnabled = isTerpasang
             edGpsType.isEnabled = isTerpasang

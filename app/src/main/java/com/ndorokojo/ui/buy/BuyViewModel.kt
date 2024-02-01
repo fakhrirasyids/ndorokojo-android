@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
 import com.ndorokojo.data.models.Event
+import com.ndorokojo.data.models.ItemsItem
 import com.ndorokojo.data.models.Kandang
 import com.ndorokojo.data.models.Ternak
 import com.ndorokojo.data.repo.TernakRepository
@@ -20,7 +21,7 @@ class BuyViewModel(
     private val ternakRepository: TernakRepository,
     private val userPreferences: UserPreferences
 ) : ViewModel() {
-    val buyTernakEvent = MutableLiveData<Event>(null)
+    val buyTernakEvent = MutableLiveData<ItemsItem>(null)
     val selectedKandangId = MutableLiveData<Int>(null)
 
     val isLoadingKandang = MutableLiveData<Boolean>()

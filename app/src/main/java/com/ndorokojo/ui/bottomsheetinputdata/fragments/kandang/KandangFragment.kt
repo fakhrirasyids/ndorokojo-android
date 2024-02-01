@@ -1,17 +1,24 @@
 package com.ndorokojo.ui.bottomsheetinputdata.fragments.kandang
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import com.ndorokojo.R
 import com.ndorokojo.databinding.FragmentKandangBinding
 import com.ndorokojo.ui.bottomsheetinputdata.BottomSheetInputData.Companion.changeFragmentToIndex
 import com.ndorokojo.ui.bottomsheetinputdata.BottomSheetInputData.Companion.storeTernakViewModel
+import com.ndorokojo.ui.main.tambahkandang.BottomSheetTambahKandang
+import com.ndorokojo.ui.map.PickLocationActivity
+import com.ndorokojo.utils.Constants
 
 class KandangFragment : Fragment() {
     private lateinit var binding: FragmentKandangBinding
@@ -23,6 +30,37 @@ class KandangFragment : Fragment() {
 //    }
 
     private lateinit var loadingDialog: AlertDialog
+
+    private val mapLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == AppCompatActivity.RESULT_OK) {
+            val lat = result.data?.extras?.getDouble(PickLocationActivity.EXTRA_LAT, 0.0)
+            val lon = result.data?.extras?.getDouble(PickLocationActivity.EXTRA_LON, 0.0)
+
+            if (lat != null && lon != null) {
+                binding.apply {
+                    storeTernakViewModel?.isLongitudeFilled?.postValue(true)
+                    storeTernakViewModel?.isLatitudeFilled?.postValue(true)
+
+                    storeTernakViewModel?.kandangLat?.postValue(lat.toString())
+                    storeTernakViewModel?.kandangLon?.postValue(lon.toString())
+
+                    layoutLocation.isVisible = false
+                    layoutShowLocation.isVisible = true
+
+                    tvLocationPicked.text = Constants.getAddress(
+                        requireContext(),
+                        lat,
+                        lon
+                    )
+                }
+            } else {
+                storeTernakViewModel?.isLongitudeFilled?.postValue(false)
+                storeTernakViewModel?.isLatitudeFilled?.postValue(false)
+            }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -281,6 +319,18 @@ class KandangFragment : Fragment() {
                 }
             }
 
+            layoutLocation.setOnClickListener {
+                mapLauncher.launch(Intent(requireContext(), PickLocationActivity::class.java))
+            }
+
+            btnClearLocation.setOnClickListener {
+                storeTernakViewModel?.isLongitudeFilled?.postValue(false)
+                storeTernakViewModel?.isLatitudeFilled?.postValue(false)
+
+                layoutLocation.isVisible = true
+                layoutShowLocation.isVisible = false
+            }
+
             btnSave.setOnClickListener {
                 if (isValid()) {
                     storeTernakViewModel?.apply {
@@ -294,8 +344,10 @@ class KandangFragment : Fragment() {
                         kandangJenis.postValue(binding.edJenisKandang.text.toString())
                         kandangAlamat.postValue(binding.edAddress.text.toString())
                         kandangRtRw.postValue(binding.edRtrw.text.toString())
-                        kandangLat.postValue(binding.edLatitude.text.toString())
-                        kandangLon.postValue(binding.edLongitude.text.toString())
+//                        kandangLat.postValue(binding.edLatitude.text.toString())
+//                        kandangLat.postValue("1")
+//                        kandangLon.postValue(binding.edLongitude.text.toString())
+//                        kandangLon.postValue("1")
                     }
 
                     val builder = AlertDialog.Builder(requireContext())
@@ -359,13 +411,16 @@ class KandangFragment : Fragment() {
         alertDialogMessage("Masukkan RT/RW Kandang dengan benar!")
 //        binding.edRtrwLayout.error = "Masukkan RT/RW Kandang dengan benar!"
         false
-    } else if (binding.edLongitude.text.isNullOrEmpty()) {
-        alertDialogMessage("Masukkan Longitude Kandang dengan benar!")
-//        binding.edAddressLayout.error = "Masukkan Longitude Kandang dengan benar!"
-        false
-    } else if (binding.edLatitude.text.isNullOrEmpty()) {
-        alertDialogMessage("Masukkan Latitude Kandang dengan benar!")
-//        binding.edAddressLayout.error = "Masukkan Latitude Kandang dengan benar!"
+//    } else if (binding.edLongitude.text.isNullOrEmpty()) {
+//        alertDialogMessage("Masukkan Longitude Kandang dengan benar!")
+////        binding.edAddressLayout.error = "Masukkan Longitude Kandang dengan benar!"
+//        false
+//    } else if (binding.edLatitude.text.isNullOrEmpty()) {
+//        alertDialogMessage("Masukkan Latitude Kandang dengan benar!")
+////        binding.edAddressLayout.error = "Masukkan Latitude Kandang dengan benar!"
+//        false
+    } else if (!binding.layoutShowLocation.isVisible) {
+        alertDialogMessage("Masukkan Lokasi dengan benar!")
         false
     } else {
         true
@@ -425,13 +480,13 @@ class KandangFragment : Fragment() {
                 binding.edRtrwLayout.error = null
             }
 
-            isLongitudeFilled.observe(viewLifecycleOwner) {
-                binding.edLongitudeLayout.error = null
-            }
-
-            isLatitudeFilled.observe(viewLifecycleOwner) {
-                binding.edLatitudeLayout.error = null
-            }
+//            isLongitudeFilled.observe(viewLifecycleOwner) {
+//                binding.edLongitudeLayout.error = null
+//            }
+//
+//            isLatitudeFilled.observe(viewLifecycleOwner) {
+//                binding.edLatitudeLayout.error = null
+//            }
         }
     }
 
@@ -518,21 +573,21 @@ class KandangFragment : Fragment() {
                 }
             }
 
-            edLongitude.addTextChangedListener {
-                if (binding.edLongitude.text.toString().isEmpty()) {
-                    storeTernakViewModel?.isLongitudeFilled?.postValue(false)
-                } else {
-                    storeTernakViewModel?.isLongitudeFilled?.postValue(true)
-                }
-            }
-
-            edLatitude.addTextChangedListener {
-                if (binding.edLatitude.text.toString().isEmpty()) {
-                    storeTernakViewModel?.isLatitudeFilled?.postValue(false)
-                } else {
-                    storeTernakViewModel?.isLatitudeFilled?.postValue(true)
-                }
-            }
+//            edLongitude.addTextChangedListener {
+//                if (binding.edLongitude.text.toString().isEmpty()) {
+//                    storeTernakViewModel?.isLongitudeFilled?.postValue(false)
+//                } else {
+//                    storeTernakViewModel?.isLongitudeFilled?.postValue(true)
+//                }
+//            }
+//
+//            edLatitude.addTextChangedListener {
+//                if (binding.edLatitude.text.toString().isEmpty()) {
+//                    storeTernakViewModel?.isLatitudeFilled?.postValue(false)
+//                } else {
+//                    storeTernakViewModel?.isLatitudeFilled?.postValue(true)
+//                }
+//            }
         }
     }
 }

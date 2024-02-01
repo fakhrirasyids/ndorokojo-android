@@ -4,8 +4,8 @@ import com.google.gson.annotations.SerializedName
 
 data class BuyResponse(
 
-    @field:SerializedName("payload")
-    val buy: Buy? = null,
+//    @field:SerializedName("payload")
+//    val buy: Buy? = null,
 
     @field:SerializedName("success")
     val success: Boolean? = null,

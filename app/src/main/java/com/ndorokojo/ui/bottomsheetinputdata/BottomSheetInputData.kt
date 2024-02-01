@@ -36,7 +36,7 @@ class BottomSheetInputData : BottomSheetDialogFragment() {
     private val binding get() = _binding!!
 
     private val storeTernakViewModel by viewModels<StoreTernakViewModel> {
-        BottomSheetInputDataViewModelFactory.getInstance(
+        BottomSheetInputDataViewModelFactory(
             Injection.provideApiService(requireContext()),
             Injection.provideUserPreferences(requireContext())
         )

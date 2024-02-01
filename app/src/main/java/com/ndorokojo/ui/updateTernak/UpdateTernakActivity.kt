@@ -24,6 +24,9 @@ class UpdateTernakActivity : AppCompatActivity(), DatePickerDialog.OnDateSetList
     private val ternakName by lazy { intent.getStringExtra(EXTRA_TERNAK_NAME) }
     private val ternakId by lazy { intent.getIntExtra(EXTRA_TERNAK_ID, -1) }
 
+    private val isFromJual by lazy { intent.getBooleanExtra(EXTRA_IS_FROM_JUAL, false) }
+
+
     private val updateTernakViewModel by viewModels<UpdateTernakViewModel> {
         UpdateTernakViewModelFactory(
             Injection.provideApiService(this)
@@ -36,6 +39,14 @@ class UpdateTernakActivity : AppCompatActivity(), DatePickerDialog.OnDateSetList
         super.onCreate(savedInstanceState)
         binding = ActivityUpdateTernakBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        if (isFromJual) {
+            binding.toolbar.title = "Update Ternak ke Terjual"
+            binding.edMonthYear.hint = "Bulan/Tahun Terjual"
+        } else {
+            binding.toolbar.title = "Update Ternak ke Mati"
+            binding.edMonthYear.hint = "Bulan/Tahun Mati"
+        }
 
         val inflater: LayoutInflater = layoutInflater
         val loadingAlert = AlertDialog.Builder(this@UpdateTernakActivity)
@@ -82,7 +93,7 @@ class UpdateTernakActivity : AppCompatActivity(), DatePickerDialog.OnDateSetList
                 if (edMonthYear.text.toString().isEmpty()) {
                     alertDialogMessage(
                         this@UpdateTernakActivity,
-                        "Masukkan Bulan/Tahun Terjual Ternak dengan benar!"
+                        "Masukkan Bulan/Tahun dengan benar!"
                     )
                 } else {
                     val builder = AlertDialog.Builder(this@UpdateTernakActivity)
@@ -95,38 +106,73 @@ class UpdateTernakActivity : AppCompatActivity(), DatePickerDialog.OnDateSetList
                         setPositiveButton("Benar") { dialog, _ ->
                             dialog.dismiss()
 
-                            updateTernakViewModel.updateTernak(ternakId, "JUAL")
-                                .observe(this@UpdateTernakActivity) { result ->
-                                    when (result) {
-                                        is Result.Loading -> {
-                                            updateTernakViewModel.isLoading.postValue(true)
-                                        }
+                            if (isFromJual) {
+                                updateTernakViewModel.updateTernak(ternakId, "JUAL")
+                                    .observe(this@UpdateTernakActivity) { result ->
+                                        when (result) {
+                                            is Result.Loading -> {
+                                                updateTernakViewModel.isLoading.postValue(true)
+                                            }
 
-                                        is Result.Success -> {
-                                            updateTernakViewModel.isLoading.postValue(false)
-                                            val builder = AlertDialog.Builder(this@UpdateTernakActivity)
-                                            builder.setCancelable(false)
+                                            is Result.Success -> {
+                                                updateTernakViewModel.isLoading.postValue(false)
+                                                val builder = AlertDialog.Builder(this@UpdateTernakActivity)
+                                                builder.setCancelable(false)
 
-                                            with(builder)
-                                            {
-                                                setTitle("Berhasil Update Ternak!")
-                                                setMessage("Silahkan melanjutkan untuk mengolah data ternak")
-                                                setPositiveButton("OK") { dialog, _ ->
-                                                    dialog.dismiss()
-                                                    val intent = Intent()
-                                                    setResult(RESULT_OK, intent)
-                                                    finish()
+                                                with(builder)
+                                                {
+                                                    setTitle("Berhasil Update Ternak!")
+                                                    setMessage("Silahkan melanjutkan untuk mengolah data ternak")
+                                                    setPositiveButton("OK") { dialog, _ ->
+                                                        dialog.dismiss()
+                                                        val intent = Intent()
+                                                        setResult(RESULT_OK, intent)
+                                                        finish()
+                                                    }
+                                                    show()
                                                 }
-                                                show()
+                                            }
+
+                                            is Result.Error -> {
+                                                updateTernakViewModel.isLoading.postValue(false)
+                                                updateTernakViewModel.responseMessage.postValue(result.error)
                                             }
                                         }
+                                    }
+                            } else {
+                                updateTernakViewModel.diedTernak(ternakId)
+                                    .observe(this@UpdateTernakActivity) { result ->
+                                        when (result) {
+                                            is Result.Loading -> {
+                                                updateTernakViewModel.isLoading.postValue(true)
+                                            }
 
-                                        is Result.Error -> {
-                                            updateTernakViewModel.isLoading.postValue(false)
-                                            updateTernakViewModel.responseMessage.postValue(result.error)
+                                            is Result.Success -> {
+                                                updateTernakViewModel.isLoading.postValue(false)
+                                                val builder = AlertDialog.Builder(this@UpdateTernakActivity)
+                                                builder.setCancelable(false)
+
+                                                with(builder)
+                                                {
+                                                    setTitle("Berhasil Update Ternak!")
+                                                    setMessage("Silahkan melanjutkan untuk mengolah data ternak")
+                                                    setPositiveButton("OK") { dialog, _ ->
+                                                        dialog.dismiss()
+                                                        val intent = Intent()
+                                                        setResult(RESULT_OK, intent)
+                                                        finish()
+                                                    }
+                                                    show()
+                                                }
+                                            }
+
+                                            is Result.Error -> {
+                                                updateTernakViewModel.isLoading.postValue(false)
+                                                updateTernakViewModel.responseMessage.postValue(result.error)
+                                            }
                                         }
                                     }
-                                }
+                            }
                         }
                         setNegativeButton("Salah") { dialog, _ ->
                             dialog.dismiss()
@@ -148,5 +194,7 @@ class UpdateTernakActivity : AppCompatActivity(), DatePickerDialog.OnDateSetList
     companion object {
         const val EXTRA_TERNAK_NAME = "extra_ternak_name"
         const val EXTRA_TERNAK_ID = "extra_ternak_id"
+
+        const val EXTRA_IS_FROM_JUAL = "extra_is_from_jual"
     }
 }

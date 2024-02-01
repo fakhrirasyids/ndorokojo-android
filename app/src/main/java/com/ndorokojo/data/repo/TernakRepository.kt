@@ -1,10 +1,18 @@
 package com.ndorokojo.data.repo
 
 import androidx.lifecycle.liveData
+import com.ndorokojo.data.models.BuyPayload
 import com.ndorokojo.data.models.KandangPayload
+import com.ndorokojo.data.models.LiveStockItem
 import com.ndorokojo.data.models.StoreTernakPayload
 import com.ndorokojo.data.remote.ApiService
 import com.ndorokojo.utils.Result
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.File
 
 class TernakRepository(
     private val apiService: ApiService
@@ -83,15 +91,17 @@ class TernakRepository(
 
     fun birthTernak(
         kandangId: Int,
-        pakanId: Int,
+        pakan: String,
         limbahId: Int,
+        gender: String,
         age: String,
         typeId: Int,
+        nominal: Int
     ) = liveData {
         emit(Result.Loading)
         try {
             val birthResponse = apiService.birthTernak(
-                kandangId, pakanId, limbahId, age, typeId
+                kandangId, pakan, limbahId, gender, age, typeId, nominal
             )
             emit(Result.Success(birthResponse))
         } catch (e: Exception) {
@@ -167,7 +177,11 @@ class TernakRepository(
         emit(Result.Loading)
         try {
             val buyResponse = apiService.buyTernak(
-                liveStockId, kandangId, dealPrice
+                BuyPayload(
+                    livestockList = listOf(LiveStockItem(liveStockId)),
+                    kandangId = kandangId,
+                    dealPrice = dealPrice
+                )
             )
             emit(Result.Success(buyResponse))
         } catch (e: Exception) {
@@ -198,10 +212,10 @@ class TernakRepository(
         }
     }
 
-    fun getBrebesDetail(id: Int) = liveData {
+    fun getDetailNews(slug: String, id: Int) = liveData {
         emit(Result.Loading)
         try {
-            val brebesDetailResponse = apiService.getDetailBrebesToday(id)
+            val brebesDetailResponse = apiService.getDetailNews(slug, id)
             emit(Result.Success(brebesDetailResponse))
         } catch (e: Exception) {
             e.printStackTrace()
@@ -209,16 +223,16 @@ class TernakRepository(
         }
     }
 
-    fun getFinanceDetail(id: Int) = liveData {
-        emit(Result.Loading)
-        try {
-            val financeDetailResponse = apiService.getFinanceToday(id)
-            emit(Result.Success(financeDetailResponse))
-        } catch (e: Exception) {
-            e.printStackTrace()
-            emit(Result.Error(e.message.toString()))
-        }
-    }
+//    fun getFinanceDetail(id: Int) = liveData {
+//        emit(Result.Loading)
+//        try {
+//            val financeDetailResponse = apiService.getFinanceToday(id)
+//            emit(Result.Success(financeDetailResponse))
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//            emit(Result.Error(e.message.toString()))
+//        }
+//    }
 
     fun getDetailKandang(kandangId: Int) = liveData {
         emit(Result.Loading)
@@ -256,6 +270,103 @@ class TernakRepository(
                 query
             )
             emit(Result.Success(searchResponse))
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emit(Result.Error(e.message.toString()))
+        }
+    }
+
+    fun updateImage(id: String, image: File) = liveData {
+        emit(Result.Loading)
+        try {
+            val idMultipart = id.toRequestBody("text/plain".toMediaType())
+            val imageMultipart = MultipartBody.Part.createFormData(
+                "image",
+                image.name,
+                image.asRequestBody("image/jpeg".toMediaTypeOrNull()),
+            )
+            val updateImageResponse = apiService.updateImage(
+                idMultipart, imageMultipart
+            )
+            emit(Result.Success(updateImageResponse))
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emit(Result.Error(e.message.toString()))
+        }
+    }
+
+    fun getNotifications() = liveData {
+        emit(Result.Loading)
+        try {
+            val notificationResponse = apiService.getNotifications()
+            emit(Result.Success(notificationResponse))
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emit(Result.Error(e.message.toString()))
+        }
+    }
+
+    fun updatePenawaran(id: Int, status: String) = liveData {
+        emit(Result.Loading)
+        try {
+            val updatePenawaranResponse = apiService.updatePenawaran(id, status)
+            emit(Result.Success(updatePenawaranResponse))
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emit(Result.Error(e.message.toString()))
+        }
+    }
+
+    fun getSliderCategories() = liveData {
+        emit(Result.Loading)
+        try {
+            val sliderCategoryResponse = apiService.getSliderCategories()
+            emit(Result.Success(sliderCategoryResponse))
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emit(Result.Error(e.message.toString()))
+        }
+    }
+
+//    fun getSliderCategoryItem(slug: String) = liveData {
+//        emit(Result.Loading)
+//        try {
+//            val sliderItemResponse = apiService.getSliderCategoryItem(slug)
+//            emit(Result.Success(sliderItemResponse))
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//            emit(Result.Error(e.message.toString()))
+//        }
+//    }
+
+    fun storeTernakFree(
+        kandangId: Int,
+        pakan: String,
+        limbahId: Int,
+        gender: String,
+        age: String,
+        typeId: Int,
+        nominal: Int,
+        status: String
+    ) = liveData {
+        emit(Result.Loading)
+        try {
+            val birthResponse = apiService.storeTernakFree(
+                kandangId, pakan, limbahId, gender, age, typeId, nominal, status
+            )
+            emit(Result.Success(birthResponse))
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emit(Result.Error(e.message.toString()))
+        }
+    }
+
+    fun getNotificationsNegotiateResult() = liveData {
+        emit(Result.Loading)
+        try {
+            val negotiationResponse = apiService.getNotificationsNegotiateResult(
+            )
+            emit(Result.Success(negotiationResponse))
         } catch (e: Exception) {
             e.printStackTrace()
             emit(Result.Error(e.message.toString()))

@@ -17,7 +17,7 @@ import com.ndorokojo.ui.bottomsheetinputdata.BottomSheetInputDataViewModelFactor
 class ProfileFragment : Fragment() {
     private lateinit var binding: FragmentProfileBinding
     private val profileViewModel by viewModels<ProfileViewModel> {
-        BottomSheetInputDataViewModelFactory.getInstance(
+        BottomSheetInputDataViewModelFactory(
             Injection.provideApiService(requireContext()),
             Injection.provideUserPreferences(requireContext())
         )

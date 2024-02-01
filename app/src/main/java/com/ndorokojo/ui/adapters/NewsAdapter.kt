@@ -2,22 +2,21 @@ package com.ndorokojo.ui.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.ndorokojo.R
 import com.ndorokojo.data.models.Event
+import com.ndorokojo.data.models.EventsItem
 import com.ndorokojo.databinding.ItemNewsRowBinding
 import com.ndorokojo.ui.main.MainActivity
 import java.text.NumberFormat
 import java.util.Locale
 
 class NewsAdapter : RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
-    private val listEvent: ArrayList<Event> = arrayListOf()
-    var onItemClick: ((Event) -> Unit)? = null
+    private val listEvent: ArrayList<EventsItem> = arrayListOf()
+    var onItemClick: ((EventsItem) -> Unit)? = null
 
-    fun setList(eventList: ArrayList<Event>) {
+    fun setList(eventList: ArrayList<EventsItem>) {
         this.listEvent.clear()
         this.listEvent.addAll(eventList)
         notifyDataSetChanged()
@@ -37,53 +36,44 @@ class NewsAdapter : RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
 
     inner class ViewHolder(private var binding: ItemNewsRowBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(event: Event) {
+        fun bind(event: EventsItem) {
             with(binding) {
-                Glide.with(root).load(event.livestockType?.image)
+                Glide.with(root).load(event.image)
                     .transition(
                         DrawableTransitionOptions.withCrossFade()
                     )
                     .into(ivLogoTernak)
 
-                if (event.livestockType?.level == "2") {
-                    if (MainActivity.allTernakItem.isNotEmpty()) {
-                        var ternakName = ""
+//                if (event.livestockType?.level == "2") {
+//                    if (MainActivity.allTernakItem.isNotEmpty()) {
+//                        var ternakName = ""
+//
+//                        for (item in MainActivity.allTernakItem) {
+//                            if (item.id == Integer.parseInt(event.livestockType!!.parentTypeId.toString())) {
+//                                ternakName = item.livestockType.toString()
+//                            }
+//                        }
+//                        tvTernak.text =
+//                            StringBuilder("$ternakName ${event.livestockType!!.livestockType} 1 ekor")
+//                    }
+//                } else {
+                    tvTernak.text = StringBuilder("Menjual ${event.livestockType} ${event.countTotal} ekor")
+//                }
 
-                        for (item in MainActivity.allTernakItem) {
-                            if (item.id == Integer.parseInt(event.livestockType!!.parentTypeId.toString())) {
-                                ternakName = item.livestockType.toString()
-                            }
-                        }
-                        tvTernak.text =
-                            StringBuilder("$ternakName ${event.livestockType!!.livestockType} 1 ekor")
-                    }
-                } else {
-                    tvTernak.text = StringBuilder("${event.livestockType?.livestockType} 1 ekor")
-                }
-
-                tvPrice.text = StringBuilder(
-                    "Rp ${
-                        formatNumber(
-                            event.soldProposedPrice.toString().toDouble()
-                        )
-                    }"
-                )
-                tvPenjual.text = event.kandang?.farmer?.fullname
+//                tvPrice.text = StringBuilder(
+//                    "Rp ${
+//                        formatNumber(
+//                            event.soldProposedPrice.toString().toDouble()
+//                        )
+//                    }"
+//                )
+                tvPenjual.text = event.seller?.fullname
+                tvNoHpPenjual.text = event.seller?.phone
 
                 btnEvent.setOnClickListener {
                     onItemClick?.invoke(event)
                 }
             }
         }
-    }
-
-    fun formatNumber(number: Double): String {
-        val formatter = NumberFormat.getInstance(
-            Locale(
-                "id",
-                "ID"
-            )
-        )
-        return formatter.format(number)
     }
 }

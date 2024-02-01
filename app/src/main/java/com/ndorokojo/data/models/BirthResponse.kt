@@ -4,8 +4,8 @@ import com.google.gson.annotations.SerializedName
 
 data class BirthResponse(
 
-	@field:SerializedName("payload")
-	val birth: Birth? = null,
+//	@field:SerializedName("payload")
+//	val birth: Birth? = null,
 
 	@field:SerializedName("success")
 	val success: Boolean? = null,

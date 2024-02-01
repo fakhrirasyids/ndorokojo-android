@@ -2,10 +2,11 @@ package com.ndorokojo.utils
 
 import android.content.Context
 import android.content.DialogInterface
+import android.location.Geocoder
 import androidx.appcompat.app.AlertDialog
 
 object Constants {
-    const val API_ENDPOINT = "HEHEHE"
+    const val API_ENDPOINT = "https://ndorokojo.id/api/"
 
     const val SPLASH_MAIN_TIMEOUT = 2000L
 
@@ -46,4 +47,9 @@ object Constants {
             show()
         }
     }
+
+    fun getAddress(context: Context, latitude: Double, longitude: Double): String =
+        Geocoder(context).getFromLocation(latitude, longitude, 1)
+            ?.get(0)!!
+            .getAddressLine(0)
 }

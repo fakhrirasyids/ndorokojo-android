@@ -32,10 +32,6 @@ class DetailKandangViewModel(
 
     val listTernak = MutableLiveData<ArrayList<LivestocksItem>>(null)
 
-    val listTernakAvailable = MutableLiveData<ArrayList<LivestocksItem>>(arrayListOf())
-    val listTernakSold = MutableLiveData<ArrayList<LivestocksItem>>(arrayListOf())
-    val listTernakDead = MutableLiveData<ArrayList<LivestocksItem>>(arrayListOf())
-
     init {
         getDetailKandang(kandangId)
     }

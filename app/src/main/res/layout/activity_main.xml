@@ -35,7 +35,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginHorizontal="12dp"
                 app:cardCornerRadius="8dp"
-                app:layout_constraintEnd_toStartOf="@id/btn_profile"
+                app:layout_constraintEnd_toStartOf="@id/btn_notif"
                 app:layout_constraintStart_toEndOf="@id/iv_logo">
 
                 <android.widget.SearchView
@@ -49,9 +49,33 @@
 
             </androidx.cardview.widget.CardView>
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/btn_notif"
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="4dp"
+                android:background="?attr/selectableItemBackground"
+                android:gravity="center"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/btn_profile"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_notif"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="@color/white" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
             <LinearLayout
                 android:id="@+id/btn_profile"
-                android:layout_width="wrap_content"
+                android:layout_width="50dp"
                 android:layout_height="match_parent"
                 android:background="?attr/selectableItemBackground"
                 android:gravity="center"
@@ -147,20 +171,19 @@
                     tools:listitem="@layout/item_button_ternak_grid"
                     tools:visibility="gone" />
 
-<!--                <androidx.recyclerview.widget.RecyclerView-->
-<!--                    android:id="@+id/rv_kandang_searched"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:orientation="horizontal"-->
-<!--                    android:layout_marginBottom="8dp"-->
-<!--                    tools:listitem="@layout/item_kandang_column"-->
-<!--                    android:visibility="gone" />-->
-
-                <LinearLayout
-                    android:id="@+id/layout_brebes_today"
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_slider_category"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    tools:listitem="@layout/item_slider_category_row"
+                    tools:visibility="gone" />
+
+                <LinearLayout
+                    android:id="@+id/layout_berita_search"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
 
                     <TextView
                         android:layout_width="match_parent"
@@ -168,69 +191,115 @@
                         android:paddingHorizontal="12dp"
                         android:paddingTop="12dp"
                         android:paddingBottom="8dp"
-                        android:text="@string/brebes_today"
+                        android:text="Berita"
                         android:textColor="@color/darkGreen"
                         android:textSize="24sp"
                         android:textStyle="bold" />
 
                     <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/rv_brebes_today"
+                        android:id="@+id/rv_search_slider"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:paddingBottom="8dp"
-                        tools:listitem="@layout/item_sliders_row"
-                        tools:visibility="gone" />
+                        android:visibility="gone"
+                        tools:listitem="@layout/item_sliders_search_row" />
 
                     <TextView
-                        android:id="@+id/tv_empty_brebes_today"
+                        android:id="@+id/tv_empty_news"
                         android:layout_width="match_parent"
                         android:layout_height="150dp"
                         android:gravity="center"
-                        android:text="@string/tidak_ada_informasi_brebes_today_saat_ini"
+                        android:text="Tidak ada Berita yang sesuai dengan pencarian"
                         android:textColor="@color/darkGreen"
                         android:visibility="gone"
                         tools:visibility="visible" />
 
                 </LinearLayout>
 
-                <LinearLayout
-                    android:id="@+id/layout_digital_finance"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingHorizontal="12dp"
-                        android:paddingTop="12dp"
-                        android:paddingBottom="8dp"
-                        android:text="@string/digital_finance"
-                        android:textColor="@color/darkGreen"
-                        android:textSize="24sp"
-                        android:textStyle="bold" />
+                <!--                <androidx.recyclerview.widget.RecyclerView-->
+                <!--                    android:id="@+id/rv_kandang_searched"-->
+                <!--                    android:layout_width="match_parent"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:orientation="horizontal"-->
+                <!--                    android:layout_marginBottom="8dp"-->
+                <!--                    tools:listitem="@layout/item_kandang_column"-->
+                <!--                    android:visibility="gone" />-->
 
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/rv_digital_finance"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:paddingBottom="8dp"
-                        tools:listitem="@layout/item_sliders_row"
-                        tools:visibility="gone" />
+                <!--                <LinearLayout-->
+                <!--                    android:id="@+id/layout_brebes_today"-->
+                <!--                    android:layout_width="match_parent"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:orientation="vertical">-->
 
-                    <TextView
-                        android:id="@+id/tv_empty_digital_finance"
-                        android:layout_width="match_parent"
-                        android:layout_height="150dp"
-                        android:gravity="center"
-                        android:text="@string/tidak_ada_informasi_mengenai_digital_finance_saat_ini"
-                        android:textColor="@color/darkGreen"
-                        android:visibility="gone"
-                        tools:visibility="visible" />
+                <!--                    <TextView-->
+                <!--                        android:layout_width="match_parent"-->
+                <!--                        android:layout_height="wrap_content"-->
+                <!--                        android:paddingHorizontal="12dp"-->
+                <!--                        android:paddingTop="12dp"-->
+                <!--                        android:paddingBottom="8dp"-->
+                <!--                        android:text="@string/brebes_today"-->
+                <!--                        android:textColor="@color/darkGreen"-->
+                <!--                        android:textSize="24sp"-->
+                <!--                        android:textStyle="bold" />-->
 
-                </LinearLayout>
+                <!--                    <androidx.recyclerview.widget.RecyclerView-->
+                <!--                        android:id="@+id/rv_brebes_today"-->
+                <!--                        android:layout_width="match_parent"-->
+                <!--                        android:layout_height="wrap_content"-->
+                <!--                        android:orientation="horizontal"-->
+                <!--                        android:paddingBottom="8dp"-->
+                <!--                        tools:listitem="@layout/item_sliders_row"-->
+                <!--                        tools:visibility="gone" />-->
+
+                <!--                    <TextView-->
+                <!--                        android:id="@+id/tv_empty_brebes_today"-->
+                <!--                        android:layout_width="match_parent"-->
+                <!--                        android:layout_height="150dp"-->
+                <!--                        android:gravity="center"-->
+                <!--                        android:text="@string/tidak_ada_informasi_brebes_today_saat_ini"-->
+                <!--                        android:textColor="@color/darkGreen"-->
+                <!--                        android:visibility="gone"-->
+                <!--                        tools:visibility="visible" />-->
+
+                <!--                </LinearLayout>-->
+
+                <!--                <LinearLayout-->
+                <!--                    android:id="@+id/layout_digital_finance"-->
+                <!--                    android:layout_width="match_parent"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:orientation="vertical">-->
+
+                <!--                    <TextView-->
+                <!--                        android:layout_width="match_parent"-->
+                <!--                        android:layout_height="wrap_content"-->
+                <!--                        android:paddingHorizontal="12dp"-->
+                <!--                        android:paddingTop="12dp"-->
+                <!--                        android:paddingBottom="8dp"-->
+                <!--                        android:text="@string/digital_finance"-->
+                <!--                        android:textColor="@color/darkGreen"-->
+                <!--                        android:textSize="24sp"-->
+                <!--                        android:textStyle="bold" />-->
+
+                <!--                    <androidx.recyclerview.widget.RecyclerView-->
+                <!--                        android:id="@+id/rv_digital_finance"-->
+                <!--                        android:layout_width="match_parent"-->
+                <!--                        android:layout_height="wrap_content"-->
+                <!--                        android:orientation="horizontal"-->
+                <!--                        android:paddingBottom="8dp"-->
+                <!--                        tools:listitem="@layout/item_sliders_row"-->
+                <!--                        tools:visibility="gone" />-->
+
+                <!--                    <TextView-->
+                <!--                        android:id="@+id/tv_empty_digital_finance"-->
+                <!--                        android:layout_width="match_parent"-->
+                <!--                        android:layout_height="150dp"-->
+                <!--                        android:gravity="center"-->
+                <!--                        android:text="@string/tidak_ada_informasi_mengenai_digital_finance_saat_ini"-->
+                <!--                        android:textColor="@color/darkGreen"-->
+                <!--                        android:visibility="gone"-->
+                <!--                        tools:visibility="visible" />-->
+
+                <!--                </LinearLayout>-->
 
             </LinearLayout>
 
@@ -251,16 +320,16 @@
             android:id="@+id/rv_kandang"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:layout_marginBottom="8dp"
+            android:orientation="horizontal"
             tools:listitem="@layout/item_kandang_column"
             tools:visibility="gone" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
             android:layout_marginBottom="10dp"
+            android:gravity="center"
             android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent">
 
@@ -311,8 +380,8 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:background="?android:attr/selectableItemBackground"
+                        android:drawableTop="@drawable/ic_birth"
                         android:text="@string/birth"
-                        android:textStyle="bold"
                         android:textColor="@color/darkGreen"
                         android:textSize="12sp"
                         app:cornerRadius="0dp"
@@ -324,10 +393,11 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:background="?android:attr/selectableItemBackground"
+                        android:drawableTop="@drawable/ic_died"
                         android:text="@string/died"
-                        android:textStyle="bold"
                         android:textColor="@color/darkGreen"
                         android:textSize="12sp"
+                        android:textStyle="bold"
                         app:cornerRadius="0dp"
                         app:drawableTint="@color/darkGreen" />
 

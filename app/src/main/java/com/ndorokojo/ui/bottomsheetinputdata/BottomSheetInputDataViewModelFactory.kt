@@ -9,7 +9,7 @@ import com.ndorokojo.ui.bottomsheetinputdata.fragments.StoreTernakViewModel
 import com.ndorokojo.ui.bottomsheetinputdata.fragments.profile.ProfileViewModel
 import com.ndorokojo.utils.UserPreferences
 
-class BottomSheetInputDataViewModelFactory private constructor(
+class BottomSheetInputDataViewModelFactory constructor(
     private val apiService: ApiService,
     private val userPreferences: UserPreferences,
 ) :
@@ -25,19 +25,5 @@ class BottomSheetInputDataViewModelFactory private constructor(
             ) as T
         } else
             throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
-    }
-
-    companion object {
-        @Volatile
-        private var INSTANCE: BottomSheetInputDataViewModelFactory? = null
-
-        fun getInstance(
-            apiService: ApiService,
-            userPreferences: UserPreferences,
-        ) = INSTANCE ?: synchronized(this) {
-            val instance = BottomSheetInputDataViewModelFactory(apiService, userPreferences)
-            INSTANCE = instance
-            instance
-        }
     }
 }

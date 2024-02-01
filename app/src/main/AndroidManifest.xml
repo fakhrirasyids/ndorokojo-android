@@ -3,6 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
 
     <application
         android:allowBackup="true"
@@ -15,6 +21,46 @@
         android:theme="@style/Theme.NdoroKojo"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        <activity
+            android:name=".ui.notifoffer.NotificationOfferingActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.NdoroKojo.Main" />
+        <activity
+            android:name=".ui.storeternakfree.StoreTernakFreeActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.NdoroKojo.Main" />
+        <activity
+            android:name=".ui.buyternak.BuyTernakActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.NdoroKojo.Main" />
+        <activity
+            android:name=".ui.buylist.BuyListActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.NdoroKojo.Main" />
+        <activity
+            android:name=".ui.notif.NotificationActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.NdoroKojo.Main" />
+        <activity
+            android:name=".ui.newbuy.NewBuyActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.NdoroKojo.Main" />
+        <activity
+            android:name=".ui.map.PickLocationActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.NdoroKojo.Main" />
+        <activity
+            android:name=".ui.ternak.ListTernakActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.NdoroKojo.Main" />
         <activity
             android:name=".ui.updateTernak.UpdateTernakActivity"
             android:exported="false"

@@ -6,6 +6,7 @@ import com.ndorokojo.data.models.AllPakanResponse
 import com.ndorokojo.data.models.AllRasTernakResponse
 import com.ndorokojo.data.models.AllTernakListResponse
 import com.ndorokojo.data.models.BirthResponse
+import com.ndorokojo.data.models.BuyPayload
 import com.ndorokojo.data.models.NewsResponse
 import com.ndorokojo.data.models.BuyResponse
 import com.ndorokojo.data.models.DetailKandangResponse
@@ -13,21 +14,31 @@ import com.ndorokojo.data.models.DetailNewsResponse
 import com.ndorokojo.data.models.DiedResponse
 import com.ndorokojo.data.models.DistrictResponse
 import com.ndorokojo.data.models.KandangPayload
+import com.ndorokojo.data.models.ListEventResponse
 import com.ndorokojo.data.models.ListKandangResponse
+import com.ndorokojo.data.models.LiveStockItem
 import com.ndorokojo.data.models.LoginResponse
 import com.ndorokojo.data.models.LogoutResponse
+import com.ndorokojo.data.models.NegotiationResponse
+import com.ndorokojo.data.models.NotificationResponse
 import com.ndorokojo.data.models.ProfileInfoResponse
 import com.ndorokojo.data.models.ProvinceResponse
 import com.ndorokojo.data.models.RegencyResponse
 import com.ndorokojo.data.models.RegisterResponse
 import com.ndorokojo.data.models.SearchResponse
 import com.ndorokojo.data.models.SellResponse
+import com.ndorokojo.data.models.SliderCategoryResponse
 import com.ndorokojo.data.models.StoreKandangResponse
+import com.ndorokojo.data.models.StoreTernakFreeResponse
 import com.ndorokojo.data.models.StoreTernakPayload
 import com.ndorokojo.data.models.StoreTernakResponse
+import com.ndorokojo.data.models.UpdateImageResponse
+import com.ndorokojo.data.models.UpdatePenawaranResponse
 import com.ndorokojo.data.models.UpdateProfileResponse
 import com.ndorokojo.data.models.UpdateTernakResponse
 import com.ndorokojo.data.models.VillageResponse
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.http.*
 
 interface ApiService {
@@ -121,10 +132,12 @@ interface ApiService {
     @FormUrlEncoded
     suspend fun birthTernak(
         @Field("kandang_id") kandang_id: Int,
-        @Field("pakan_id") pakan_id: Int,
+        @Field("pakan") pakan_id: String,
         @Field("limbah_id") limbah_id: Int,
+        @Field("gender") gender: String,
         @Field("age") age: String,
-        @Field("type_id") type_id: Int
+        @Field("type_id") type_id: Int,
+        @Field("nominal") nominal: Int,
     ): BirthResponse
 
     @POST("livestocks/deads")
@@ -145,14 +158,15 @@ interface ApiService {
     ): SellResponse
 
     @GET("transactions/events")
-    suspend fun getAllListEvents(): AllEventResponse
+    suspend fun getAllListEvents(): ListEventResponse
 
     @POST("transactions/buys")
-    @FormUrlEncoded
+//    @FormUrlEncoded
     suspend fun buyTernak(
-        @Field("livestock_id") livestock_id: Int,
-        @Field("kandang_id") kandang_id: Int,
-        @Field("deal_price") deal_price: Int,
+//        @Field("livestocks") livestocks: Array<LiveStockItem>,
+//        @Field("kandang_id") kandang_id: Int,
+//        @Field("deal_price") deal_price: Int,
+        @Body payload: BuyPayload
     ): BuyResponse
 
     @GET("sliders/today")
@@ -161,15 +175,16 @@ interface ApiService {
     @GET("sliders/finance")
     suspend fun getAllFinanceToday(): NewsResponse
 
-    @GET("sliders/today/{id}")
-    suspend fun getDetailBrebesToday(
-        @Path("id") id: Int
+    @GET("sliders/{slug}/{id}")
+    suspend fun getDetailNews(
+        @Path("slug") slug: String,
+        @Path("id") id: Int,
     ): DetailNewsResponse
 
-    @GET("sliders/finance/{id}")
-    suspend fun getFinanceToday(
-        @Path("id") id: Int
-    ): DetailNewsResponse
+//    @GET("sliders/finance/{id}")
+//    suspend fun getFinanceToday(
+//        @Path("id") id: Int
+//    ): DetailNewsResponse
 
     @GET("report/by-kandang-id")
     suspend fun getDetailKandang(
@@ -189,4 +204,45 @@ interface ApiService {
     suspend fun searchQuery(
         @Query("search") search: String
     ): SearchResponse
+
+    @Multipart
+    @POST("livestocks/image/update")
+    suspend fun updateImage(
+        @Part("id") id: RequestBody,
+        @Part image: MultipartBody.Part,
+    ): UpdateImageResponse
+
+    @GET("transactions/proposals")
+    suspend fun getNotifications(): NotificationResponse
+
+    @POST("transactions/proposals/{id}")
+    @FormUrlEncoded
+    suspend fun updatePenawaran(
+        @Path("id") id: Int,
+        @Field("status") status: String
+    ): UpdatePenawaranResponse
+
+    @GET("references/slider-categories")
+    suspend fun getSliderCategories(): SliderCategoryResponse
+
+    @GET("notifications/negotiate-status")
+    suspend fun getNotificationsNegotiateResult(): NegotiationResponse
+
+//    @GET("sliders/{slug}")
+//    suspend fun getSliderCategoryItem(
+//        @Path("slug") slug: String
+//    ): NewsResponse
+
+    @POST("livestocks/store-free")
+    @FormUrlEncoded
+    suspend fun storeTernakFree(
+        @Field("kandang_id") kandang_id: Int,
+        @Field("pakan") pakan_id: String,
+        @Field("limbah_id") limbah_id: Int,
+        @Field("gender") gender: String,
+        @Field("age") age: String,
+        @Field("type_id") type_id: Int,
+        @Field("nominal") nominal: Int,
+        @Field("status") status: String,
+    ): StoreTernakFreeResponse
 }

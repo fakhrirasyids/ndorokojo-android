@@ -11,6 +11,7 @@ import com.ndorokojo.utils.Result
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 
 class SellViewModel(
     private val ternakRepository: TernakRepository,
@@ -23,6 +24,8 @@ class SellViewModel(
     val listTernak = MutableLiveData<ArrayList<Ternak>>(null)
     val selectedRasTypeId = MutableLiveData<Int>(null)
     val selectedTernakId = MutableLiveData<Int>(null)
+
+    val imageTernak = MutableLiveData<File>()
 
     fun getAllTernakList(liveStockId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -53,6 +56,11 @@ class SellViewModel(
     fun sellTernak() = ternakRepository.sellTernak(
         id = selectedTernakId.value!!,
         proposedPrice = sellProposedPrice.value!!,
+    )
+
+    fun updateTernakImage() = ternakRepository.updateImage(
+        id = selectedTernakId.value.toString(),
+        image = imageTernak.value!!
     )
 
     // Died Data

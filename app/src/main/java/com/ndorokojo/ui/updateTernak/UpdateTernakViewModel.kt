@@ -28,7 +28,21 @@ class UpdateTernakViewModel(
     val responseMessage = MutableLiveData<String>()
 
     fun updateTernak(id: Int, status: String) =
-        ternakRepository.updateTernak(id, status, terjualYear.value.toString(), terjualMonth.value.toString())
+        ternakRepository.updateTernak(
+            id,
+            status,
+            terjualYear.value.toString(),
+            terjualMonth.value.toString()
+        )
+
+    fun diedTernak(id: Int) =
+        ternakRepository.diedTernak(
+            id,
+            "null",
+            "null",
+            terjualYear.value.toString(),
+            terjualMonth.value.toString()
+        )
 
     val terjualMonth = MutableLiveData<String>(null)
     val terjualYear = MutableLiveData<String>(null)

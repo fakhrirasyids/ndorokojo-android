@@ -7,7 +7,7 @@ import com.ndorokojo.data.repo.AuthRepository
 import com.ndorokojo.data.repo.TernakRepository
 import com.ndorokojo.utils.UserPreferences
 
-class SellViewModelFactory private constructor(
+class SellViewModelFactory constructor(
     private val apiService: ApiService
 ) :
     ViewModelProvider.NewInstanceFactory() {
@@ -17,18 +17,5 @@ class SellViewModelFactory private constructor(
             return SellViewModel(TernakRepository(apiService)) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
-    }
-
-    companion object {
-        @Volatile
-        private var INSTANCE: SellViewModelFactory? = null
-
-        fun getInstance(
-            apiService: ApiService
-        ) = INSTANCE ?: synchronized(this) {
-            val instance = SellViewModelFactory(apiService)
-            INSTANCE = instance
-            instance
-        }
     }
 }

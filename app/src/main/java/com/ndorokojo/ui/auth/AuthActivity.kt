@@ -2,6 +2,7 @@ package com.ndorokojo.ui.auth
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.ndorokojo.R

@@ -7,14 +7,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.ndorokojo.R
+import com.ndorokojo.data.models.ArticlesItem
 import com.ndorokojo.data.models.News
 import com.ndorokojo.databinding.ItemSlidersRowBinding
 
 class SlidersAdapter : RecyclerView.Adapter<SlidersAdapter.ViewHolder>() {
-    private val listNews: ArrayList<News> = arrayListOf()
-    var onItemClick: ((Int) -> Unit)? = null
+    private val listNews: ArrayList<ArticlesItem> = arrayListOf()
+    var onItemClick: ((Int, String) -> Unit)? = null
 
-    fun setList(newsList: ArrayList<News>) {
+    fun setList(newsList: ArrayList<ArticlesItem>) {
         this.listNews.clear()
         this.listNews.addAll(newsList)
         notifyDataSetChanged()
@@ -34,7 +35,7 @@ class SlidersAdapter : RecyclerView.Adapter<SlidersAdapter.ViewHolder>() {
 
     inner class ViewHolder(private var binding: ItemSlidersRowBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(news: News) {
+        fun bind(news: ArticlesItem) {
             with(binding) {
                 Glide.with(root).load(news.thumbnail)
                     .placeholder(ContextCompat.getDrawable(root.context, R.drawable.ndorokojo_logo))
@@ -46,7 +47,7 @@ class SlidersAdapter : RecyclerView.Adapter<SlidersAdapter.ViewHolder>() {
                 tvTitle.text = news.title
 
                 btnEvent.setOnClickListener {
-                    onItemClick?.invoke(news.id!!)
+                    onItemClick?.invoke(news.id!!, news.slug!!)
                 }
             }
         }

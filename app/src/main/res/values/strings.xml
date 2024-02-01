@@ -66,7 +66,10 @@
     <string name="sensor_status_not_connected">TIDAK TERPASANG</string>
 
     <string name="ternak_umur_anak">ANAK</string>
+    <string name="ternak_umur_muda">MUDA</string>
     <string name="ternak_umur_dewasa">DEWASA</string>
+    <string name="ternak_umur_bibit_induk">BIBIT INDUK</string>
+    <string name="ternak_umur_bibit_pejantan">BIBIT PEJANTAN</string>
 
     <string name="jenis_kandang_medium">KANDANG MEDIUM</string>
     <string name="jenis_kandang_besar">KANDANG BESAR</string>
@@ -113,18 +116,19 @@
     <string name="pilih_kandang_untuk_hewan">Pilih Kandang untuk Hewan</string>
     <string name="tidak_ada_event_saat_ini">Tidak ada Event saat ini!</string>
     <string name="tidak_ada_event_search">Tidak ada Event yang cocok dengan Search!</string>
-    <string name="tidak_ada_informasi_brebes_today_saat_ini">Tidak ada informasi Brebes Today saat ini</string>
+    <string name="tidak_ada_informasi_category">Tidak ada informasi Category saat ini</string>
     <string name="tidak_ada_informasi_brebes_today_search">Tidak ada informasi Brebes Today yang cocok dengan Search!</string>
     <string name="tidak_ada_informasi_mengenai_digital_finance_saat_ini">Tidak ada informasi mengenai Digital Finance saat ini</string>
     <string name="tidak_ada_informasi_mengenai_digital_finance_search">Tidak ada informasi mengenai Digital Finance yang cocok dengan Search!</string>
     <string name="asal_kandang">Asal Kandang</string>
-    <string name="total_ternak">Total Ternak : </string>
-    <string name="ternak_hasil_beli">Ternak Hasil Beli :</string>
-    <string name="ternak_dijual">Ternak Dijual :</string>
-    <string name="ternak_mati">Ternak Mati :</string>
-    <string name="daftar_ternak">Daftar Ternak Tersedia</string>
+    <string name="total_ternak">Total Ternak</string>
+    <string name="ternak_hasil_beli">Ternak Hasil Beli</string>
+    <string name="ternak_dijual">Ternak Dijual</string>
+    <string name="ternak_mati">Ternak Mati</string>
+    <string name="daftar_ternak">Daftar Ternak</string>
     <string name="daftar_ternak_terjual">Daftar Ternak Terjual</string>
     <string name="tidak_ada_data">Tidak ada Data!</string>
     <string name="daftar_ternak_mati">Daftar Ternak Mati</string>
     <string name="bulan_tahun_terjual">Bulan/Tahun Terjual</string>
+    <string name="ternak_tanpa_status">Ternak Tanpa Status</string>
 </resources>

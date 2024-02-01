@@ -1,5 +1,6 @@
 package com.ndorokojo.ui.main.tambahkandang.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -7,18 +8,59 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
+import androidx.transition.AutoTransition
+import androidx.transition.TransitionManager
 import com.ndorokojo.R
 import com.ndorokojo.databinding.FragmentKandangBinding
 import com.ndorokojo.ui.bottomsheetinputdata.BottomSheetInputData.Companion.changeFragmentToIndex
 import com.ndorokojo.ui.main.tambahkandang.BottomSheetTambahKandang
 import com.ndorokojo.ui.main.tambahkandang.BottomSheetTambahKandang.Companion.storeKandangViewModel
+import com.ndorokojo.ui.map.PickLocationActivity
+import com.ndorokojo.ui.map.PickLocationActivity.Companion.EXTRA_LAT
+import com.ndorokojo.ui.map.PickLocationActivity.Companion.EXTRA_LON
+import com.ndorokojo.utils.Constants
 
 class KandangTambahFragment : Fragment() {
     private lateinit var binding: FragmentKandangBinding
 
     private lateinit var loadingDialog: AlertDialog
+
+    private val mapLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == AppCompatActivity.RESULT_OK) {
+            val lat = result.data?.extras?.getDouble(EXTRA_LAT, 0.0)
+            val lon = result.data?.extras?.getDouble(EXTRA_LON, 0.0)
+
+            if (lat != null && lon != null) {
+                binding.apply {
+                    storeKandangViewModel?.isLongitudeFilled?.postValue(true)
+                    storeKandangViewModel?.isLatitudeFilled?.postValue(true)
+
+                    storeKandangViewModel?.kandangLat?.postValue(lat.toString())
+                    storeKandangViewModel?.kandangLon?.postValue(lon.toString())
+
+                    layoutLocation.isVisible = false
+                    layoutShowLocation.isVisible = true
+
+                    tvLocationPicked.text = Constants.getAddress(
+                        requireContext(),
+                        lat,
+                        lon
+                    )
+                }
+            } else {
+                storeKandangViewModel?.isLongitudeFilled?.postValue(false)
+                storeKandangViewModel?.isLatitudeFilled?.postValue(false)
+            }
+        }
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -79,7 +121,7 @@ class KandangTambahFragment : Fragment() {
                             setOnItemClickListener { _, _, position, _ ->
                                 getRegencyList(listProvince[position].id!!)
                                 selectedProvinceId.postValue(listProvince[position].id!!)
-                                Log.e("NGEDAD", "observeAll: ${selectedProvinceId.value}", )
+                                Log.e("NGEDAD", "observeAll: ${selectedProvinceId.value}")
                                 selectedRegencyId.postValue(null)
                                 selectedDistrictId.postValue(null)
                                 selectedVillageId.postValue(null)
@@ -275,8 +317,10 @@ class KandangTambahFragment : Fragment() {
                         kandangJenis.postValue(binding.edJenisKandang.text.toString())
                         kandangAlamat.postValue(binding.edAddress.text.toString())
                         kandangRtRw.postValue(binding.edRtrw.text.toString())
-                        kandangLat.postValue(binding.edLatitude.text.toString())
-                        kandangLon.postValue(binding.edLongitude.text.toString())
+//                        kandangLat.postValue(binding.edLatitude.text.toString())
+//                        kandangLat.postValue("1")
+//                        kandangLon.postValue(binding.edLongitude.text.toString())
+//                        kandangLon.postValue("1")
                     }
 
                     val builder = AlertDialog.Builder(requireContext())
@@ -295,6 +339,18 @@ class KandangTambahFragment : Fragment() {
                         show()
                     }
                 }
+            }
+
+            layoutLocation.setOnClickListener {
+                mapLauncher.launch(Intent(requireContext(), PickLocationActivity::class.java))
+            }
+
+            btnClearLocation.setOnClickListener {
+                storeKandangViewModel?.isLongitudeFilled?.postValue(false)
+                storeKandangViewModel?.isLatitudeFilled?.postValue(false)
+
+                layoutLocation.isVisible = true
+                layoutShowLocation.isVisible = false
             }
         }
     }
@@ -329,13 +385,19 @@ class KandangTambahFragment : Fragment() {
     } else if (binding.edRtrw.text.isNullOrEmpty()) {
         binding.edRtrwLayout.error = "Masukkan RT/RW Kandang dengan benar!"
         false
-    } else if (binding.edLongitude.text.isNullOrEmpty()) {
-        binding.edAddressLayout.error = "Masukkan Longitude Kandang dengan benar!"
+//    } else if (binding.edLongitude.text.isNullOrEmpty()) {
+//        binding.edAddressLayout.error = "Masukkan Longitude Kandang dengan benar!"
+//        false
+//    } else if (binding.edLatitude.text.isNullOrEmpty()) {
+//        binding.edAddressLayout.error = "Masukkan Latitude Kandang dengan benar!"
+//        false
+//    } else {
+    }
+    else if (!binding.layoutShowLocation.isVisible) {
+        alertDialogMessage("Masukkan Lokasi dengan benar!")
         false
-    } else if (binding.edLatitude.text.isNullOrEmpty()) {
-        binding.edAddressLayout.error = "Masukkan Latitude Kandang dengan benar!"
-        false
-    } else {
+    }
+    else {
         true
     }
 
@@ -393,13 +455,13 @@ class KandangTambahFragment : Fragment() {
                 binding.edRtrwLayout.error = null
             }
 
-            isLongitudeFilled.observe(viewLifecycleOwner) {
-                binding.edLongitudeLayout.error = null
-            }
-
-            isLatitudeFilled.observe(viewLifecycleOwner) {
-                binding.edLatitudeLayout.error = null
-            }
+//            isLongitudeFilled.observe(viewLifecycleOwner) {
+//                binding.edLongitudeLayout.error = null
+//            }
+//
+//            isLatitudeFilled.observe(viewLifecycleOwner) {
+//                binding.edLatitudeLayout.error = null
+//            }
         }
     }
 
@@ -486,21 +548,21 @@ class KandangTambahFragment : Fragment() {
                 }
             }
 
-            edLongitude.addTextChangedListener {
-                if (binding.edLongitude.text.toString().isEmpty()) {
-                    storeKandangViewModel?.isLongitudeFilled?.postValue(false)
-                } else {
-                    storeKandangViewModel?.isLongitudeFilled?.postValue(true)
-                }
-            }
-
-            edLatitude.addTextChangedListener {
-                if (binding.edLatitude.text.toString().isEmpty()) {
-                    storeKandangViewModel?.isLatitudeFilled?.postValue(false)
-                } else {
-                    storeKandangViewModel?.isLatitudeFilled?.postValue(true)
-                }
-            }
+//            edLongitude.addTextChangedListener {
+//                if (binding.edLongitude.text.toString().isEmpty()) {
+//                    storeKandangViewModel?.isLongitudeFilled?.postValue(false)
+//                } else {
+//                    storeKandangViewModel?.isLongitudeFilled?.postValue(true)
+//                }
+//            }
+//
+//            edLatitude.addTextChangedListener {
+//                if (binding.edLatitude.text.toString().isEmpty()) {
+//                    storeKandangViewModel?.isLatitudeFilled?.postValue(false)
+//                } else {
+//                    storeKandangViewModel?.isLatitudeFilled?.postValue(true)
+//                }
+//            }
         }
     }
 }

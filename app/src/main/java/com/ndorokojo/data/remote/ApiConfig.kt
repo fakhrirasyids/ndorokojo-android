@@ -1,5 +1,6 @@
 package com.ndorokojo.data.remote
 
+import com.google.gson.GsonBuilder
 import com.ndorokojo.BuildConfig
 import com.ndorokojo.utils.Constants.API_ENDPOINT
 import com.ndorokojo.utils.UserPreferences.Companion.preferenceDefaultValue
@@ -9,6 +10,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
+
 object ApiConfig {
     fun getApiService(token: String): ApiService {
         val loggingInterceptor = if (BuildConfig.DEBUG) {
@@ -17,9 +19,13 @@ object ApiConfig {
             HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.NONE)
         }
 
+        val gson = GsonBuilder()
+            .setLenient()
+            .create()
+
         val retrofit = Retrofit.Builder()
             .baseUrl(API_ENDPOINT)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .client(
                 if (token != preferenceDefaultValue) {
                     OkHttpClient.Builder()

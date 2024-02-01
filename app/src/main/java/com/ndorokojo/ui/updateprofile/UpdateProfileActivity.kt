@@ -29,10 +29,9 @@ class UpdateProfileActivity : AppCompatActivity() {
     private lateinit var binding: ActivityUpdateProfileBinding
 
     private val isFromAuth by lazy { intent.getBooleanExtra(IS_FROM_AUTH, false) }
-//    private val accessToken by lazy { intent.getStringExtra(USER_ACCESS_TOKEN) }
 
     private val updateProfileViewModel by viewModels<UpdateProfileViewModel> {
-        UpdateProfileViewModelFactory.getInstance(
+        UpdateProfileViewModelFactory(
             Injection.provideApiService(this),
             Injection.provideUserPreferences(this)
         )
@@ -205,8 +204,6 @@ class UpdateProfileActivity : AppCompatActivity() {
                                 binding.edProvinsi.setText(item.name)
                             }
                         }
-                    } else {
-                        binding.edProvinsi.hint = "Pilih Provinsi"
                     }
 
                     binding.edProvinsi.isEnabled = true
@@ -221,7 +218,6 @@ class UpdateProfileActivity : AppCompatActivity() {
                         listProvinceString
                     )
 
-                    Log.e("NGEODAL", "observeAll: $listProvinceString")
                     binding.edProvinsi.apply {
                         setAdapter(provinceAdapter)
                         setOnItemClickListener { _, _, position, _ ->
@@ -233,13 +229,10 @@ class UpdateProfileActivity : AppCompatActivity() {
 
                             binding.apply {
                                 edKabupaten.setText("")
-                                edKabupaten.hint = "Pilih Kota/Kabupaten"
                                 edKabupaten.setAdapter(null)
                                 edKecamatan.setText("")
-                                edKecamatan.hint = "Pilih Kecamatan"
                                 edKecamatan.setAdapter(null)
                                 edDesaKel.setText("")
-                                edDesaKel.hint = "Pilih Desa/Kelurahan"
                                 edDesaKel.setAdapter(null)
                             }
                         }
@@ -255,8 +248,6 @@ class UpdateProfileActivity : AppCompatActivity() {
                                 binding.edKabupaten.setText(item.name)
                             }
                         }
-                    } else {
-                        binding.edKabupaten.hint = "Pilih Kota/Kabupaten"
                     }
 
                     binding.edKabupaten.isEnabled = true
@@ -278,14 +269,10 @@ class UpdateProfileActivity : AppCompatActivity() {
                             selectedDistrictId.postValue(null)
                             selectedVillageId.postValue(null)
 
-                            Log.e("NGEODAL", "observeAll: ${selectedRegencyId.value}")
-
                             binding.apply {
                                 edKecamatan.setText("")
-                                edKecamatan.hint = "Pilih Kecamatan"
                                 edKecamatan.setAdapter(null)
                                 edDesaKel.setText("")
-                                edDesaKel.hint = "Pilih Desa/Kelurahan"
                                 edDesaKel.setAdapter(null)
                             }
                         }
@@ -301,8 +288,6 @@ class UpdateProfileActivity : AppCompatActivity() {
                                 binding.edKecamatan.setText(item.name)
                             }
                         }
-                    } else {
-                        binding.edKecamatan.hint = "Pilih Kecamatan"
                     }
 
                     binding.edKecamatan.isEnabled = true
@@ -325,7 +310,6 @@ class UpdateProfileActivity : AppCompatActivity() {
 
                             binding.apply {
                                 edDesaKel.setText("")
-                                edDesaKel.hint = "Pilih Desa/Kelurahan"
                                 edDesaKel.setAdapter(null)
                             }
                         }
@@ -341,8 +325,6 @@ class UpdateProfileActivity : AppCompatActivity() {
                                 binding.edDesaKel.setText(item.name)
                             }
                         }
-                    } else {
-                        binding.edDesaKel.hint = "Pilih Desa/Kelurahan"
                     }
 
                     binding.edDesaKel.isEnabled = true

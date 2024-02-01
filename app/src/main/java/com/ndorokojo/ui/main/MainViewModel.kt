@@ -6,10 +6,11 @@ import androidx.lifecycle.asFlow
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.ndorokojo.data.models.Event
+import com.ndorokojo.data.models.EventsItem
 import com.ndorokojo.data.models.Kandang
 import com.ndorokojo.data.models.News
-import com.ndorokojo.data.models.SearchResponse
-import com.ndorokojo.data.models.Searched
+import com.ndorokojo.data.models.SearchPayload
+import com.ndorokojo.data.models.SliderCategory
 import com.ndorokojo.data.models.TernakItem
 import com.ndorokojo.data.repo.TernakRepository
 import com.ndorokojo.utils.Result
@@ -17,7 +18,6 @@ import com.ndorokojo.utils.UserPreferences
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import retrofit2.http.Query
 
 class MainViewModel(
     private val ternakRepository: TernakRepository,
@@ -36,12 +36,13 @@ class MainViewModel(
 
     val isLoadingKandang = MutableLiveData<Boolean>()
 
-    val eventList = MutableLiveData<ArrayList<Event>>(arrayListOf())
+    val eventList = MutableLiveData<ArrayList<EventsItem>>(arrayListOf())
     val kandangList = MutableLiveData<ArrayList<Kandang>>(arrayListOf())
 
-    val brebesTodayList = MutableLiveData<ArrayList<News>>(arrayListOf())
-    val digitalFinanceList = MutableLiveData<ArrayList<News>>(arrayListOf())
+//    val brebesTodayList = MutableLiveData<ArrayList<News>>(arrayListOf())
+//    val digitalFinanceList = MutableLiveData<ArrayList<News>>(arrayListOf())
 
+    val sliderCategoryList = MutableLiveData<ArrayList<SliderCategory>>(arrayListOf())
 
     init {
         getAllEventList()
@@ -60,7 +61,7 @@ class MainViewModel(
 
                         is Result.Success -> {
                             isErrorLoadingData.postValue(false)
-                            eventList.postValue(result.data.listEvent as ArrayList<Event>?)
+                            eventList.postValue(result.data.payload as ArrayList<EventsItem>?)
                             getAllTernakList()
                         }
 
@@ -85,9 +86,8 @@ class MainViewModel(
                         }
 
                         is Result.Success -> {
-//                            isLoading.postValue(false)
                             ternakList.postValue(result.data.ternakItem as ArrayList<TernakItem>?)
-                            getBrebesTodayList()
+                            getSliderCategories()
                         }
 
                         is Result.Error -> {
@@ -101,59 +101,86 @@ class MainViewModel(
         }
     }
 
-    private fun getBrebesTodayList() {
+    private fun getSliderCategories() {
         viewModelScope.launch(Dispatchers.IO) {
-            ternakRepository.getAllBrebesToday().asFlow().collect { result ->
+            ternakRepository.getSliderCategories().asFlow().collect { result ->
                 withContext(Dispatchers.Main) {
                     when (result) {
                         is Result.Loading -> {
                             isLoading.postValue(true)
+                            isErrorLoadingData.postValue(false)
                         }
 
                         is Result.Success -> {
+                            isLoading.postValue(false)
+                            sliderCategoryList.postValue(result.data.payload as ArrayList<SliderCategory>?)
+                            isErrorLoadingData.postValue(false)
+                        }
+
+                        is Result.Error -> {
+                            isLoading.postValue(false)
+                            responseMessage.postValue(result.error)
+                            isErrorLoadingData.postValue(true)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+//    private fun getBrebesTodayList() {
+//        viewModelScope.launch(Dispatchers.IO) {
+//            ternakRepository.getAllBrebesToday().asFlow().collect { result ->
+//                withContext(Dispatchers.Main) {
+//                    when (result) {
+//                        is Result.Loading -> {
+//                            isLoading.postValue(true)
+//                        }
+//
+//                        is Result.Success -> {
+////                            isLoading.postValue(false)
+//                            brebesTodayList.postValue(result.data.news as ArrayList<News>?)
+//                            getDigitalFinanceList()
+//                        }
+//
+//                        is Result.Error -> {
 //                            isLoading.postValue(false)
-                            brebesTodayList.postValue(result.data.news as ArrayList<News>?)
-                            getDigitalFinanceList()
-                        }
+//                            responseMessage.postValue(result.error)
+//                            isErrorLoadingData.postValue(false)
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
 
-                        is Result.Error -> {
-                            isLoading.postValue(false)
-                            responseMessage.postValue(result.error)
-                            isErrorLoadingData.postValue(false)
-                        }
-                    }
-                }
-            }
-        }
-    }
+//    private fun getDigitalFinanceList() {
+//        viewModelScope.launch(Dispatchers.IO) {
+//            ternakRepository.getAllFinanceToday().asFlow().collect { result ->
+//                withContext(Dispatchers.Main) {
+//                    when (result) {
+//                        is Result.Loading -> {
+//                            isLoading.postValue(true)
+//                        }
+//
+//                        is Result.Success -> {
+//                            isLoading.postValue(false)
+//                            digitalFinanceList.postValue(result.data.news as ArrayList<News>?)
+//                            isErrorLoadingData.postValue(false)
+//                        }
+//
+//                        is Result.Error -> {
+//                            isLoading.postValue(false)
+//                            responseMessage.postValue(result.error)
+//                            isErrorLoadingData.postValue(false)
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
 
-    private fun getDigitalFinanceList() {
-        viewModelScope.launch(Dispatchers.IO) {
-            ternakRepository.getAllFinanceToday().asFlow().collect { result ->
-                withContext(Dispatchers.Main) {
-                    when (result) {
-                        is Result.Loading -> {
-                            isLoading.postValue(true)
-                        }
-
-                        is Result.Success -> {
-                            isLoading.postValue(false)
-                            digitalFinanceList.postValue(result.data.news as ArrayList<News>?)
-                            isErrorLoadingData.postValue(false)
-                        }
-
-                        is Result.Error -> {
-                            isLoading.postValue(false)
-                            responseMessage.postValue(result.error)
-                            isErrorLoadingData.postValue(false)
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    val searchResponse = MutableLiveData<Searched>(null)
+    val searchResponse = MutableLiveData<SearchPayload>(null)
 
     fun searchAnything(query: String) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -166,7 +193,7 @@ class MainViewModel(
 
                         is Result.Success -> {
                             isLoading.postValue(false)
-                            searchResponse.postValue(result.data.searched!!)
+                            searchResponse.postValue(result.data.payload!!)
                         }
 
                         is Result.Error -> {

@@ -6,7 +6,7 @@ import com.ndorokojo.data.remote.ApiService
 import com.ndorokojo.data.repo.AuthRepository
 import com.ndorokojo.utils.UserPreferences
 
-class UpdateProfileViewModelFactory private constructor(
+class UpdateProfileViewModelFactory constructor(
     private val apiService: ApiService,
     private val userPreferences: UserPreferences,
 ) :
@@ -17,19 +17,5 @@ class UpdateProfileViewModelFactory private constructor(
             return UpdateProfileViewModel(AuthRepository(apiService), userPreferences) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
-    }
-
-    companion object {
-        @Volatile
-        private var INSTANCE: UpdateProfileViewModelFactory? = null
-
-        fun getInstance(
-            apiService: ApiService,
-            userPreferences: UserPreferences,
-        ) = INSTANCE ?: synchronized(this) {
-            val instance = UpdateProfileViewModelFactory(apiService, userPreferences)
-            INSTANCE = instance
-            instance
-        }
     }
 }

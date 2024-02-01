@@ -19,10 +19,12 @@ data class KandangPayload(
 )
 
 data class LivestockPayload(
-    val pakan_id: Int,
+    val pakan: String,
     val limbah_id: Int,
     val age: String,
     val type_id: Int,
+    val nominal: Int,
+    val gender: String
 )
 
 data class SensorPayload(

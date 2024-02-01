@@ -4,73 +4,44 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginHorizontal="2dp"
     android:layout_marginVertical="8dp"
-    app:cardBackgroundColor="@color/green"
     app:cardCornerRadius="6dp">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:id="@+id/btn_event"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="4dp"
+        android:paddingHorizontal="8dp"
         android:background="?attr/selectableItemBackground"
-        android:clickable="true"
-        android:focusable="true"
-        android:paddingBottom="8dp">
+        android:orientation="horizontal"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
-            android:id="@+id/layout_header"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/tv_ternak_id"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:orientation="vertical"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_weight="1"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            tools:text="TRK_XXX" />
 
-
-            <TextView
-                android:id="@+id/tv_ternak_id"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:textColor="@color/white"
-                android:textStyle="bold"
-                tools:text="TRK_XXX" />
-
-        </LinearLayout>
-
-        <View
-            android:id="@+id/view"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="4dp"
-            android:background="@color/gray"
-            app:layout_constraintTop_toBottomOf="@id/layout_header" />
-
-        <LinearLayout
-            android:id="@+id/layout_name"
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:gravity="end"
-            android:orientation="horizontal"
-            app:layout_constraintTop_toBottomOf="@id/view">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Status Ternak : "
-                android:textColor="@color/gray" />
+            android:text="Status Ternak : "
+            android:textColor="@color/black" />
 
 
-            <TextView
-                android:id="@+id/tv_status"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Lahir"
-                android:textColor="@color/white"
-                android:textStyle="bold" />
+        <TextView
+            android:id="@+id/tv_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lahir"
+            android:textColor="@color/black"
+            android:textStyle="bold" />
 
-        </LinearLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 
 </androidx.cardview.widget.CardView>
